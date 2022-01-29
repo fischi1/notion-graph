@@ -1,61 +1,69 @@
 import chroma from "chroma-js"
 import Graphology from "graphology"
-import ForceSupervisor from "graphology-layout-force/worker"
+import GraphologyLayout from "graphology-layout-forceatlas2"
+import ForceSupervisor from "graphology-layout-forceatlas2/worker"
 import Sigma from "sigma"
+import { NewPageEvent } from "../events/NewPageEvent"
 import "./graph.css"
+
+const maxNodeSize = 18
+const minNodeSize = 4
+const depthSteps = 3
 
 const initGraph = () => {
     const graph = new Graphology()
 
-        console.log("effect")
-        let i = 0
-        const nodes: string[] = []
-        
-        setInterval(() => {
-            if (i >= 300) return
-            console.log(i)
+    const handleNewPage = (event: NewPageEvent) => {
+        const detail = event.detail
+        const nodeSize = Math.max(
+            minNodeSize,
+            maxNodeSize - detail.depth * depthSteps
+        )
 
-            const name = "n" + i
+        let x = Math.random() * 2 - 1
+        let y = Math.random() * 2 - 1
 
-            try {
-                graph.addNode(name, {
-                    x: Math.random() * 2 - 1,
-                    y: Math.random() * 2 - 1,
-                    size: 10,
-                    label: name,
-                    color: chroma.random().hex()
-                })
-            } catch (error) {}
+        if (detail.parentId) {
+            const parentNode = graph.getNodeAttributes(detail.parentId)
+            x += parentNode.x
+            y += parentNode.y
+        }
 
-            if (i > 0) {
-                graph.addEdge(
-                    name,
-                    nodes[Math.floor(Math.random() * nodes.length)]
-                )
+        graph.addNode(detail.id, {
+            x: x,
+            y: y,
+            size: nodeSize,
+            label: detail.title,
+            url: detail.url,
+            color: chroma.random().hex()
+        })
 
-                if (Math.random() > 0.5) {
-                    try {
-                        graph.addEdge(
-                            nodes[Math.floor(Math.random() * nodes.length)],
-                            nodes[Math.floor(Math.random() * nodes.length)]
-                        )
-                        graph.addEdge(
-                            nodes[Math.floor(Math.random() * nodes.length)],
-                            nodes[Math.floor(Math.random() * nodes.length)]
-                        )
-                    } catch(error) {}
-                }
-            }
+        graph.hasNode
+        if (detail.parentId) {
+            graph.addEdge(detail.parentId, detail.id, {
+                type: "arrow",
+                size: Math.ceil(nodeSize / 5) + 1
+            })
+        }
+    }
 
-            nodes.push(name)
+    document.addEventListener("newPage", handleNewPage as any)
+    GraphologyLayout.inferSettings(500)
 
-            i++
-        }, 25)
+    const layout = new ForceSupervisor(graph, {
+        settings: GraphologyLayout.inferSettings(1000)
+    })
+    layout.start()
 
-        const layout = new ForceSupervisor(graph, {})
-        layout.start()
+    const renderer = new Sigma(
+        graph,
+        document.querySelector("#graph") as HTMLDivElement
+    )
 
-        const renderer = new Sigma(graph, document.querySelector("#graph") as HTMLDivElement)
+    renderer.on("clickNode", (event) => {
+        const url = graph.getNodeAttribute(event.node, "url")
+        window.open(url, "_blank", "noopener noreferrer")
+    })
 }
 
 export default initGraph

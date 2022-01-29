@@ -1,3 +1,8 @@
 body {
     background-color: grey;
 }
+
+#panel {
+    position: absolute;
+    z-index: 1000;
+}

@@ -4,7 +4,7 @@ import getPageTitle from "./functions/getPageTitle"
 import idToUrl from "./functions/idToUrl"
 import { Page } from "./types/Page"
 
-const rootPageId = "919caf5b-50e2-4cda-8c1b-61be89e1b004"
+const rootPageId = "7906799a-0352-45bc-b75e-02a6e9a540d5"
 
 const createEmptyPage = (): Page => ({
     title: "",
