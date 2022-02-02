@@ -1,12 +1,12 @@
-import Panel from "./components/Panel"
-import "./UserInterface.css"
 import { useState } from "preact/hooks"
 import Button from "./components/Button"
+import Panel from "./components/Panel"
+import "./UserInterface.css"
 
 type Props = {}
 
 const UserInterface = ({}: Props) => {
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(true)
 
     if (open) {
         return <Panel onClose={() => setOpen(false)} />

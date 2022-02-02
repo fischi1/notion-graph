@@ -1,5 +1,6 @@
 import Button from "./Button"
 import "./Panel.css"
+import TextInput from "./TextInput"
 
 type Props = { onClose: () => void }
 
@@ -7,14 +8,22 @@ const Panel = ({ onClose }: Props) => {
     return (
         <div className="panel">
             <Button onClick={onClose}>Close</Button>
-            <div>Hello world</div>
+            <hr />
             <br />
-            <div>
-                <button>Start</button>
-            </div>
-            <div>
-                <input type="text" name="link" id="link" />
-            </div>
+            <p>Either</p>
+            <ul>
+                <li>
+                    <Button>Use output.json</Button>
+                </li>
+                <li>
+                    <TextInput
+                        label="Enter Notion Url"
+                        name="notion-url"
+                        value=""
+                        onChange={() => {}}
+                    />
+                </li>
+            </ul>
         </div>
     )
 }
