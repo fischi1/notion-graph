@@ -1,4 +1,6 @@
 import { render } from "preact"
-import Panel from "./Panel"
+import UserInterface from "./UserInterface"
+import "@fontsource/asap"
+import "./index.css"
 
-render(<Panel text="12312sadfasdf3" />, document.getElementById("panel")!)
+render(<UserInterface />, document.getElementById("ui")!)
