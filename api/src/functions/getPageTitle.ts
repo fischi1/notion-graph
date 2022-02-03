@@ -1,4 +1,4 @@
-import notion from "../notion"
+import notion from "./notion"
 
 const getPageTitle = async (id: string) => {
     const response = (await notion.pages.retrieve({
