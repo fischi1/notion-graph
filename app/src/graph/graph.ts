@@ -4,7 +4,9 @@ import GraphologyLayout from "graphology-layout-forceatlas2"
 import ForceSupervisor from "graphology-layout-forceatlas2/worker"
 import Sigma from "sigma"
 import { addBeginTraversalListener } from "../events/BeginTraversalEvent"
+import { addEndTraversalListener } from "../events/EndTraversalEvent"
 import { NewPageEvent } from "../events/NewPageEvent"
+import { exportGraph, importGraph } from "./exportImportGraph"
 import "./graph.css"
 
 const maxNodeSize = 18
@@ -29,9 +31,15 @@ const initGraph = () => {
         window.open(url, "_blank", "noopener noreferrer")
     })
 
+    importGraph(graph)
+
     addBeginTraversalListener(() => {
         graph.clear()
         renderer.getCamera().animatedReset()
+    })
+
+    addEndTraversalListener(() => {
+        exportGraph(graph)
     })
 
     const handleNewPage = (event: NewPageEvent) => {
@@ -70,6 +78,11 @@ const initGraph = () => {
                 size: Math.ceil(nodeSize / 5) + 1
             })
         }
+    }
+
+    const w = window as any
+    w.export = () => {
+        exportGraph(graph)
     }
 
     document.addEventListener("newPage", handleNewPage as any)

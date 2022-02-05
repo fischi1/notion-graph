@@ -1,4 +1,6 @@
 .panel {
+    width: 100ch;
+    max-width: 95vw;
     background-color: rgba(255, 255, 255, 0.4);
     padding: 1rem;
     border-radius: 3px;
