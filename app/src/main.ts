@@ -1,9 +1,9 @@
-import output from "../../api/output-7906799a-0352-45bc-b75e-02a6e9a540d5.json"
-import { Page } from "../../api/src/types/Page"
+import initSocketIo from "./functions/initSocketIo"
 import initGraph from "./graph/graph"
-import traverseExistingGraph from "./graph/traverseExistingGraph"
+import initGraphTraversal from "./graph/graphTraversal"
 import "./main.css"
 import "./reset.css"
 
+initSocketIo()
 initGraph()
-traverseExistingGraph(output as Page)
+initGraphTraversal()
