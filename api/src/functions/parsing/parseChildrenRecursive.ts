@@ -1,10 +1,30 @@
 import getBlockChildren from "../../notion-api/getBlockChildren"
+import { NewPageDetail } from "../../types/NewPageDetail"
 import { createEmptyPage, Page } from "../../types/Page"
 import idToUrl from "../idToUrl"
 
-const parseChildrenRecursive = async (pageId: string, currentPage: Page) => {
-    console.log(`parsing page "${currentPage.title}": ${pageId}`)
-    const blocks = await getBlockChildren(pageId)
+const parseChildrenRecursive = async (
+    currentPage: Page,
+    depth: number,
+    onPageFound?: (pageDetail: NewPageDetail) => void
+) => {
+    const blocks = await getBlockChildren(currentPage.id)
+
+    const handleNewPageFound = (
+        newPage: Page,
+        depth: number,
+        parentId: string
+    ) => {
+        if (!onPageFound) return
+
+        onPageFound({
+            id: newPage.id,
+            title: newPage.title,
+            url: newPage.url,
+            depth: depth,
+            parentId: parentId
+        })
+    }
 
     for (const element of blocks.results) {
         //@ts-ignore
@@ -12,15 +32,16 @@ const parseChildrenRecursive = async (pageId: string, currentPage: Page) => {
 
         switch (type) {
             case "child_page":
-                const page = element as Extract<
+                const pageBlock = element as Extract<
                     typeof element,
                     { type: "child_page" }
                 >
                 const newPage = createEmptyPage()
-                newPage.title = page.child_page.title
-                newPage.id = page.id
-                newPage.url = idToUrl(page.id)
-                await parseChildrenRecursive(page.id, newPage)
+                newPage.title = pageBlock.child_page.title
+                newPage.id = pageBlock.id
+                newPage.url = idToUrl(pageBlock.id)
+                handleNewPageFound(newPage, depth + 1, currentPage.id)
+                await parseChildrenRecursive(newPage, depth + 1, onPageFound)
                 currentPage.children.push(newPage)
         }
     }

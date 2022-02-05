@@ -15,7 +15,10 @@ app.post("/parse/:pageId", async (req, res) => {
     if (!uuidValidate(pageId)) {
         throw new Error("param not a valid uuid")
     }
-    const page = await parsePages(pageId, { storeAsFile: true })
+    const page = await parsePages(pageId, {
+        storeAsFile: true,
+        onPageFound: (pageDetail) => console.log(pageDetail)
+    })
     res.send({ message: `Done parsing ${page.title}` })
 })
 
