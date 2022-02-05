@@ -1,10 +1,12 @@
 import { Page } from "../../../api/src/types/Page"
 import dispatchNewPageEvent from "../events/NewPageEvent"
 
-const sleepTime = 500
-let traversal: "breadth-first" | "depth-first" = "breadth-first"
+const sleepTime = 300
 
-const traverseExistingGraph = async (page: Page) => {
+const traverseExistingGraph = async (
+    page: Page,
+    traversal: "breadth-first" | "depth-first"
+) => {
     if (traversal === "depth-first") {
         traverseDepthFirst(page)
     } else {

@@ -4,7 +4,7 @@ type Props = {
     name: string
     label: string
     value: string
-    onChange: JSX.GenericEventHandler<HTMLInputElement>
+    onChange: (value: string) => void
 }
 
 const TextInput = ({ name, label, value, onChange }: Props) => {
@@ -16,7 +16,12 @@ const TextInput = ({ name, label, value, onChange }: Props) => {
                 name={name}
                 id={name}
                 value={value}
-                onChange={onChange}
+                // has to be used instead of onChange when using preact
+                onInput={(e) => {
+                    if (e.target instanceof HTMLInputElement) {
+                        onChange(e.target.value)
+                    }
+                }}
             />
         </div>
     )

@@ -48,7 +48,6 @@ const initGraph = () => {
     }
 
     document.addEventListener("newPage", handleNewPage as any)
-    GraphologyLayout.inferSettings(500)
 
     const layout = new ForceSupervisor(graph, {
         settings: GraphologyLayout.inferSettings(1000)
