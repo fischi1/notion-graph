@@ -16,6 +16,7 @@
     "chroma-js": "^2.3.0",
     "graphology": "^0.23.2",
     "graphology-layout-force": "^0.2.4",
+    "graphology-layout-forceatlas2": "^0.8.1",
     "postcss-nested": "^5.0.6",
     "sigma": "^2.2.0"
   },

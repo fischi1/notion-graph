@@ -1,6 +1,6 @@
 import express from "express"
 import { validate as uuidValidate } from "uuid"
-import parsePages from "./parsePages"
+import parsePages from "./functions/parsing/parsePages"
 
 const port = +(process.env.PORT ?? 3000)
 
@@ -15,7 +15,7 @@ app.post("/parse/:pageId", async (req, res) => {
     if (!uuidValidate(pageId)) {
         throw new Error("param not a valid uuid")
     }
-    const page = await parsePages(pageId, true)
+    const page = await parsePages(pageId, { storeAsFile: true })
     res.send({ message: `Done parsing ${page.title}` })
 })
 

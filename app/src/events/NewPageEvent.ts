@@ -1,14 +1,8 @@
-type NewPageEventDetail = {
-    title: string
-    id: string
-    url: string
-    depth: number
-    parentId?: string
-}
+import { NewPageDetail } from "../../../api/src/types/NewPageDetail"
 
-export type NewPageEvent = CustomEvent<NewPageEventDetail>
+export type NewPageEvent = CustomEvent<NewPageDetail>
 
-const dispatchNewPageEvent = (detail: NewPageEventDetail) => {
+const dispatchNewPageEvent = (detail: NewPageDetail) => {
     document.dispatchEvent(new CustomEvent("newPage", { detail: detail }))
 }
 
