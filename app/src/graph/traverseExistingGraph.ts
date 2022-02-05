@@ -1,5 +1,5 @@
+import { Page } from "../../../api/src/types/Page"
 import dispatchNewPageEvent from "../events/NewPageEvent"
-import { Page } from "../notion/types/Page"
 
 const sleepTime = 500
 let traversal: "breadth-first" | "depth-first" = "breadth-first"
@@ -27,14 +27,14 @@ const traverseBreadthFirst = async (root: Page) => {
             id: queueItem.page.id,
             url: queueItem.page.url,
             depth: queueItem.depth,
-            parentId: queueItem.parentId,
+            parentId: queueItem.parentId
         })
         await new Promise((resolve) => setTimeout(resolve, sleepTime))
 
         const children = queueItem.page.children.map((page) => ({
             page: page,
             depth: queueItem.depth + 1,
-            parentId: queueItem.page.id,
+            parentId: queueItem.page.id
         })) as QueueItem[]
         queue.push(...children)
     }
@@ -51,7 +51,7 @@ const traverseDepthFirst = async (page: Page) => {
             id: page.id,
             url: page.url,
             depth: depth,
-            parentId: parentPage?.id,
+            parentId: parentPage?.id
         })
         for (const childPage of page.children) {
             await new Promise((resolve) => setTimeout(resolve, sleepTime))
