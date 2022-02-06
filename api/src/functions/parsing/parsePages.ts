@@ -31,7 +31,7 @@ const parsePages = async (
     }
 
     const startTime = new Date().getTime()
-    await parseChildrenRecursive(root, 0, onPageFound)
+    await parseChildrenRecursive(root.id, root, 0, onPageFound)
     if (storeAsFile) {
         fs.writeFileSync(
             `output-${rootPageId}.json`,

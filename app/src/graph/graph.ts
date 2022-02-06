@@ -80,11 +80,6 @@ const initGraph = () => {
         }
     }
 
-    const w = window as any
-    w.export = () => {
-        exportGraph(graph)
-    }
-
     document.addEventListener("newPage", handleNewPage as any)
 }
 

@@ -4,11 +4,12 @@ import { createEmptyPage, Page } from "../../types/Page"
 import idToUrl from "../idToUrl"
 
 const parseChildrenRecursive = async (
+    currentBlockId: string,
     currentPage: Page,
     depth: number,
     onPageFound?: (pageDetail: NewPageDetail) => void
 ) => {
-    const blocks = await getBlockChildren(currentPage.id)
+    const blocks = await getBlockChildren(currentBlockId)
 
     const handleNewPageFound = (
         newPage: Page,
@@ -41,8 +42,66 @@ const parseChildrenRecursive = async (
                 newPage.id = pageBlock.id
                 newPage.url = idToUrl(pageBlock.id)
                 handleNewPageFound(newPage, depth + 1, currentPage.id)
-                await parseChildrenRecursive(newPage, depth + 1, onPageFound)
                 currentPage.children.push(newPage)
+                await parseChildrenRecursive(
+                    newPage.id,
+                    newPage,
+                    depth + 1,
+                    onPageFound
+                )
+                break
+
+            case "toggle":
+                const toggleBlock = element as Extract<
+                    typeof element,
+                    { type: "toggle" }
+                >
+                await parseChildrenRecursive(
+                    toggleBlock.id,
+                    currentPage,
+                    depth,
+                    onPageFound
+                )
+                break
+
+            case "callout":
+                const calloutBlock = element as Extract<
+                    typeof element,
+                    { type: "callout" }
+                >
+                await parseChildrenRecursive(
+                    calloutBlock.id,
+                    currentPage,
+                    depth,
+                    onPageFound
+                )
+                break
+
+            case "bulleted_list_item":
+                const bulletedListBlock = element as Extract<
+                    typeof element,
+                    { type: "bulleted_list_item" }
+                >
+                await parseChildrenRecursive(
+                    bulletedListBlock.id,
+                    currentPage,
+                    depth,
+                    onPageFound
+                )
+                break
+
+            case "numbered_list_item":
+                const numberedListBlock = element as Extract<
+                    typeof element,
+                    { type: "numbered_list_item" }
+                >
+                await parseChildrenRecursive(
+                    numberedListBlock.id,
+                    currentPage,
+                    depth,
+                    onPageFound
+                )
+                break
         }
     }
 }
