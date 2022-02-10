@@ -1,8 +1,10 @@
 import JSZip from "jszip"
 import { createEmptyPage, Page } from "../../../api/src/types/Page"
 import { addBeginTraversalListener } from "../events/BeginTraversalEvent"
+import { dispatchEndTraversal } from "../events/EndTraversalEvent"
 import idToUrl from "../functions/idToUrl"
 import stringToId from "../functions/stringToId"
+import traverseExistingGraph from "./traverseExistingGraph"
 
 //const content = await zip.file(file)?.async("string")
 //read file content
@@ -26,8 +28,10 @@ const handleBeginTraversal = async () => {
     for (const absoluteFilePath in zip.files) {
         addFileToPages(absoluteFilePath, rootPage)
     }
-    console.log("done")
     console.log(rootPage)
+    await traverseExistingGraph(rootPage, "breadth-first")
+    dispatchEndTraversal({})
+    console.log("done")
 }
 
 const validateFilePath = (filePath: string[]) => {

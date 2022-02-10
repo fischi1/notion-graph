@@ -1,9 +1,7 @@
-import initSocketIo from "./functions/initSocketIo"
 import initGraph from "./graph/graph"
-import initGraphTraversal from "./graph/graphTraversal"
+import initTraverseZipGraph from "./graph/traverseZipGraph"
 import "./main.css"
 import "./reset.css"
 
-initSocketIo()
 initGraph()
-initGraphTraversal()
+initTraverseZipGraph()

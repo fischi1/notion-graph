@@ -15,7 +15,7 @@ const Panel = ({ onClose }: Props) => {
 
     const handleStart = () => {
         dispatchBeginTraversal({ notionUrl: value })
-        // setInProgress(true)
+        setInProgress(true)
     }
 
     useEffect(() => {
