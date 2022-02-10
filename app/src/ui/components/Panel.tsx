@@ -15,7 +15,7 @@ const Panel = ({ onClose }: Props) => {
 
     const handleStart = () => {
         dispatchBeginTraversal({ notionUrl: value })
-        setInProgress(true)
+        // setInProgress(true)
     }
 
     useEffect(() => {
@@ -28,12 +28,14 @@ const Panel = ({ onClose }: Props) => {
                 <p>In Progress</p>
             ) : (
                 <div>
-                    <TextInput
-                        label="Notion Url"
-                        name="notion-url"
-                        value={value}
-                        onChange={setValue}
-                    />
+                    <div>
+                        <input
+                            type="file"
+                            name="input-file"
+                            id="input-file"
+                            accept="application/zip"
+                        />
+                    </div>
                     <Button onClick={handleStart}>Start</Button>
                 </div>
             )}

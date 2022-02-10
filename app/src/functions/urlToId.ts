@@ -1,3 +1,5 @@
+import stringToId from "./stringToId"
+
 const urlToId = (notionUrl: string) => {
     notionUrl = notionUrl.trim()
     if (notionUrl.match(/^https:\/\/(www.)?notion.so\/.+-[0-9a-f]{32}$/)) {
@@ -5,15 +7,15 @@ const urlToId = (notionUrl: string) => {
             notionUrl.lastIndexOf("-") + 1
         )
 
-        const substrings = [
-            uuidWithoutHyphen.substring(0, 8),
-            uuidWithoutHyphen.substring(8, 12),
-            uuidWithoutHyphen.substring(12, 16),
-            uuidWithoutHyphen.substring(16, 20),
-            uuidWithoutHyphen.substring(20)
-        ] as const
+        const id = stringToId(uuidWithoutHyphen)
 
-        return substrings.join("-")
+        if (!id) {
+            throw new Error(
+                "url is not a valid notion url, error trying to create uuid"
+            )
+        }
+
+        return id
     } else {
         throw new Error("url is not a valid notion url")
     }
