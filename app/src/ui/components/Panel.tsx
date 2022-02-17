@@ -1,20 +1,16 @@
-import Button from "./Button"
-import "./Panel.css"
-import TextInput from "./TextInput"
-import { useState, useEffect } from "preact/hooks"
+import { useEffect, useState } from "preact/hooks"
 import { dispatchBeginTraversal } from "../../events/BeginTraversalEvent"
 import { addEndTraversalListener } from "../../events/EndTraversalEvent"
+import Button from "./Button"
+import "./Panel.css"
 
 type Props = { onClose: () => void }
 
 const Panel = ({ onClose }: Props) => {
     const [inProgress, setInProgress] = useState(false)
-    const [value, setValue] = useState(
-        "https://www.notion.so/CV-cb54324924df43059ea2ff39276471d6"
-    )
 
     const handleStart = () => {
-        dispatchBeginTraversal({ notionUrl: value })
+        dispatchBeginTraversal({ notionUrl: "" })
         setInProgress(true)
     }
 

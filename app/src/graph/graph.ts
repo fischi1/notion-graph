@@ -5,13 +5,15 @@ import Sigma from "sigma"
 import { addBeginTraversalListener } from "../events/BeginTraversalEvent"
 import { addEndTraversalListener } from "../events/EndTraversalEvent"
 import { NewPageEvent } from "../events/NewPageEvent"
-import randomColor from "../functions/randomColor"
+import hslToRgb from "../functions/hslToRgb"
 import { exportGraph, importGraph } from "./exportImportGraph"
 import "./graph.css"
 
 const maxNodeSize = 18
 const minNodeSize = 4
 const depthSteps = 3
+
+const hueShiftPerNode = 45
 
 const initGraph = () => {
     const graph = new Graphology()
@@ -63,13 +65,16 @@ const initGraph = () => {
             y += parentNode.y
         }
 
+        const hue = detail.depth * hueShiftPerNode
+        const color = hslToRgb((hue % 360) / 360, 1, 0.5)
+
         graph.addNode(detail.id, {
             x: x,
             y: y,
             size: nodeSize,
             label: detail.title,
             url: detail.url,
-            color: randomColor()
+            color: `rgb(${color[0]}, ${color[1]}, ${color[2]})`
         })
 
         if (detail.parentId) {
