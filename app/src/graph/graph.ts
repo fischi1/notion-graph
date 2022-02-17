@@ -1,4 +1,3 @@
-import chroma from "chroma-js"
 import Graphology from "graphology"
 import GraphologyLayout from "graphology-layout-forceatlas2"
 import ForceSupervisor from "graphology-layout-forceatlas2/worker"
@@ -6,6 +5,7 @@ import Sigma from "sigma"
 import { addBeginTraversalListener } from "../events/BeginTraversalEvent"
 import { addEndTraversalListener } from "../events/EndTraversalEvent"
 import { NewPageEvent } from "../events/NewPageEvent"
+import randomColor from "../functions/randomColor"
 import { exportGraph, importGraph } from "./exportImportGraph"
 import "./graph.css"
 
@@ -69,7 +69,7 @@ const initGraph = () => {
             size: nodeSize,
             label: detail.title,
             url: detail.url,
-            color: chroma.random().hex()
+            color: randomColor()
         })
 
         if (detail.parentId) {
