@@ -3,11 +3,7 @@ import { createEmptyPage, Page } from "../../../api/src/types/Page"
 import { addBeginTraversalListener } from "../events/BeginTraversalEvent"
 import { dispatchEndTraversal } from "../events/EndTraversalEvent"
 import idToUrl from "../functions/idToUrl"
-import stringToId from "../functions/stringToId"
 import traverseExistingGraph from "./traverseExistingGraph"
-
-//const content = await zip.file(file)?.async("string")
-//read file content
 
 const initTraverseZipGraph = async () => {
     console.log("registering listener")
@@ -24,9 +20,39 @@ const handleBeginTraversal = async () => {
     if (!file) return
 
     const zip = await JSZip.loadAsync(file)
+
+    const filePaths = Object.keys(zip.files)
+    let foundFirstSubpage = false
+    let firstSubpage = 0
+    for (
+        firstSubpage = 0;
+        firstSubpage < filePaths.length && !foundFirstSubpage;
+        firstSubpage++
+    ) {
+        const path = filePaths[firstSubpage]
+        if (path.split("/").length > 1) {
+            foundFirstSubpage = true
+        }
+    }
+    const isWorkspaceExport = firstSubpage > 2
+
     const rootPage = createEmptyPage()
-    for (const absoluteFilePath in zip.files) {
-        await addFileToPages(absoluteFilePath, rootPage, zip)
+
+    if (isWorkspaceExport) {
+        rootPage.id = "ffb0e8ae-b45e-40b6-925f-a453f9dd3f57"
+        rootPage.title = "Workspace"
+        rootPage.url = "https://notion.so"
+    }
+
+    for (const absoluteFilePath of filePaths) {
+        let text = ""
+        if (absoluteFilePath.endsWith(".html"))
+            text = (await zip.file(absoluteFilePath)?.async("text")) ?? ""
+        await addFileToPages(
+            (isWorkspaceExport ? "Workspace ffb0e/" : "") + absoluteFilePath,
+            rootPage,
+            text
+        )
     }
     console.log(rootPage)
     await traverseExistingGraph(rootPage, "breadth-first")
@@ -49,7 +75,11 @@ const validateFilePath = (filePath: string[]) => {
     return true
 }
 
-const addFileToPages = async (filePath: string, rootPage: Page, zip: JSZip) => {
+const addFileToPages = async (
+    filePath: string,
+    rootPage: Page,
+    text: string
+) => {
     if (!filePath.endsWith(".html")) return
 
     const splitFilePath = filePath.split("/")
@@ -59,7 +89,6 @@ const addFileToPages = async (filePath: string, rootPage: Page, zip: JSZip) => {
         return
     }
 
-    const text = await zip.file(filePath)?.async("text")
     if (!text) return
     const pageInfo = parseHtml(text, filePath)
 
@@ -89,7 +118,6 @@ const addFileToPages = async (filePath: string, rootPage: Page, zip: JSZip) => {
         newPage.id = pageInfo.id
         newPage.title = title
         newPage.url = idToUrl(pageInfo.id)
-
         currentPage.children.push(newPage)
     }
 }
