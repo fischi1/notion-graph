@@ -1,5 +1,5 @@
-import { Page } from "../../../api/src/types/Page"
 import dispatchNewPageEvent from "../events/NewPageEvent"
+import { Page } from "../types/Page"
 
 const sleepTime = 150
 

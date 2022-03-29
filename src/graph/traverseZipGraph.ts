@@ -1,8 +1,8 @@
 import JSZip from "jszip"
-import { createEmptyPage, Page } from "../../../api/src/types/Page"
 import { addBeginTraversalListener } from "../events/BeginTraversalEvent"
 import { dispatchEndTraversal } from "../events/EndTraversalEvent"
 import idToUrl from "../functions/idToUrl"
+import { createEmptyPage, Page } from "../types/Page"
 import traverseExistingGraph from "./traverseExistingGraph"
 
 const initTraverseZipGraph = async () => {

@@ -1,4 +1,4 @@
-import { NewPageDetail } from "../../../api/src/types/NewPageDetail"
+import { NewPageDetail } from "../types/NewPageDetail"
 
 export type NewPageEvent = CustomEvent<NewPageDetail>
 
