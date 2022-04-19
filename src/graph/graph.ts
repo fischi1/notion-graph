@@ -1,12 +1,10 @@
-import Graphology from "graphology"
-import GraphologyLayout from "graphology-layout-forceatlas2"
-import ForceSupervisor from "graphology-layout-forceatlas2/worker"
-import Sigma from "sigma"
+import * as d3 from "d3"
+import { SimulationLinkDatum, SimulationNodeDatum } from "d3"
 import { addBeginTraversalListener } from "../events/BeginTraversalEvent"
 import { addEndTraversalListener } from "../events/EndTraversalEvent"
 import { NewPageEvent } from "../events/NewPageEvent"
 import hslToRgb from "../functions/hslToRgb"
-import { exportGraph, importGraph } from "./exportImportGraph"
+import randomColor from "../functions/randomColor"
 import "./graph.css"
 
 const maxNodeSize = 18
@@ -15,74 +13,107 @@ const depthSteps = 3
 
 const hueShiftPerNode = 45
 
+interface PageNode extends SimulationNodeDatum {
+    id: string
+    label: string
+}
+
+type PageLink = SimulationLinkDatum<PageNode>
+
+const nodes: PageNode[] = []
+
+const links: PageLink[] = []
+
 const initGraph = () => {
-    const graph = new Graphology()
+    addBeginTraversalListener(() => {})
 
-    const layout = new ForceSupervisor(graph, {
-        settings: GraphologyLayout.inferSettings(1000)
-    })
-    layout.start()
+    addEndTraversalListener(() => {})
 
-    const renderer = new Sigma(
-        graph,
-        document.querySelector("#graph") as HTMLDivElement
+    const width = window.innerWidth
+    const height = window.innerHeight
+    const svg = d3.select("#graph").attr("width", width).attr("height", height)
+
+    const getNodeColor = (node: PageNode) => {
+        return randomColor()
+    }
+
+    const linkElements = svg
+        .append("g")
+        .selectAll("line")
+        .data(links)
+        .enter() //create placeholder
+        .append("line")
+        .attr("stroke-width", 1)
+        .attr("stroke", "#E5E5E5")
+
+    const nodeElements = svg
+        .append("g")
+        .selectAll("circle")
+        .data(nodes)
+        .enter()
+        .append("circle")
+        .attr("r", 10)
+        .attr("fill", getNodeColor)
+
+    const textElements = svg
+        .append("g")
+        .selectAll("text")
+        .data(nodes)
+        .enter()
+        .append("text")
+        .text((node) => node.label)
+        .attr("font-size", 15)
+        .attr("dx", 15)
+        .attr("dy", 5)
+
+    const simulation = d3
+        .forceSimulation()
+        .force("charge", d3.forceManyBody().strength(-70))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+    // .force("collision", d3.forceCollide(50))
+
+    simulation.nodes(nodes)
+
+    simulation.force(
+        "link",
+        d3
+            .forceLink<PageNode, PageLink>(links)
+            .id((node) => node.id)
+            .strength((link: any) => link.strength)
     )
 
-    renderer.on("clickNode", (event) => {
-        const url = graph.getNodeAttribute(event.node, "url")
-        window.open(url, "_blank", "noopener noreferrer")
-    })
+    simulation.on("tick", () => {
+        nodeElements
+            .attr("cx", (node) => node.x ?? 0)
+            .attr("cy", (node) => node.y ?? 0)
 
-    importGraph(graph)
+        textElements
+            .attr("x", (node) => node.x ?? 0)
+            .attr("y", (node) => node.y ?? 0)
 
-    addBeginTraversalListener(() => {
-        graph.clear()
-        renderer.getCamera().animatedReset()
-    })
-
-    addEndTraversalListener(() => {
-        exportGraph(graph)
+        linkElements
+            .attr("x1", (link: any) => link.source.x)
+            .attr("y1", (link: any) => link.source.y)
+            .attr("x2", (link: any) => link.target.x)
+            .attr("y2", (link: any) => link.target.y)
     })
 
     const handleNewPage = (event: NewPageEvent) => {
         const detail = event.detail
 
-        if (graph.hasNode(detail.id)) {
-            graph.dropNode(detail.id)
-        }
+        // if (graph.hasNode(detail.id)) {
+        //     graph.dropNode(detail.id)
+        // }
 
         const nodeSize = Math.max(
             minNodeSize,
             maxNodeSize - detail.depth * depthSteps
         )
 
-        let x = Math.random() * 2 - 1
-        let y = Math.random() * 2 - 1
-
-        if (detail.parentId) {
-            const parentNode = graph.getNodeAttributes(detail.parentId)
-            x += parentNode.x
-            y += parentNode.y
-        }
-
         const hue = detail.depth * hueShiftPerNode
         const color = hslToRgb((hue % 360) / 360, 1, 0.5)
 
-        graph.addNode(detail.id, {
-            x: x,
-            y: y,
-            size: nodeSize,
-            label: detail.title,
-            url: detail.url,
-            color: `rgb(${color[0]}, ${color[1]}, ${color[2]})`
-        })
-
-        if (detail.parentId) {
-            graph.addEdge(detail.parentId, detail.id, {
-                type: "arrow",
-                size: Math.ceil(nodeSize / 5) + 1
-            })
-        }
+        //add node
     }
 
     document.addEventListener("newPage", handleNewPage as any)
