@@ -50,34 +50,15 @@ const initGraph = () => {
         return randomColor()
     }
 
-    let linkElements = svg
+    let linkElements: any = svg
         .append("g")
         .attr("stroke-width", 4)
         .attr("stroke", "#E5E5E5")
         .selectAll("line")
-    // .data(links)
-    // .enter()
-    // .append("line")
 
-    const nodeElements = svg
-        .append("g")
-        .selectAll("circle")
-        .data(nodes)
-        .enter()
-        .append("circle")
-        .attr("r", 10)
-        .attr("fill", getNodeColor)
+    let nodeElements: any = svg.append("g").selectAll("circle")
 
-    const textElements = svg
-        .append("g")
-        .selectAll("text")
-        .data(nodes)
-        .enter()
-        .append("text")
-        .text((node) => node.label)
-        .attr("font-size", 15)
-        .attr("dx", 15)
-        .attr("dy", 5)
+    let textElements: any = svg.append("g").selectAll("text")
 
     const simulation = d3
         .forceSimulation()
@@ -97,12 +78,12 @@ const initGraph = () => {
 
     simulation.on("tick", () => {
         nodeElements
-            .attr("cx", (node) => node.x ?? 0)
-            .attr("cy", (node) => node.y ?? 0)
+            .attr("cx", (node: PageNode) => node.x ?? 0)
+            .attr("cy", (node: PageNode) => node.y ?? 0)
 
         textElements
-            .attr("x", (node) => node.x ?? 0)
-            .attr("y", (node) => node.y ?? 0)
+            .attr("x", (node: PageNode) => node.x ?? 0)
+            .attr("y", (node: PageNode) => node.y ?? 0)
 
         linkElements
             .attr("x1", (link: any) => link.source.x)
@@ -113,47 +94,50 @@ const initGraph = () => {
 
     const restart = () => {
         console.log("restart")
-        // Apply the general update pattern to the nodes.
-        // node = node.data(nodes, function (d) {
-        //     return d.id
-        // })
-        // node.exit().remove()
-        // node = node
-        //     .enter()
-        //     .append("circle")
-        //     .attr("fill", function (d) {
-        //         return color(d.id)
-        //     })
-        //     .attr("r", 8)
-        //     .merge(node)
 
-        // Apply the general update pattern to the links.
-        // .selectAll("line")
-        // .data(links)
-        // .enter()
-        // .append("line")
-        //@ts-ignore
+        nodeElements = nodeElements.data(nodes)
+        nodeElements.exit().remove()
+        nodeElements = nodeElements
+            .enter()
+            .append("circle")
+            .attr("r", 10)
+            .attr("fill", getNodeColor)
+            .merge(nodeElements)
+
         linkElements = linkElements.data(links)
         linkElements.exit().remove()
         linkElements = linkElements.enter().append("line").merge(linkElements)
 
+        textElements = textElements.data(nodes)
+        textElements.exit().remove()
+        textElements = textElements
+            .enter()
+            .append("text")
+            .text((node: PageNode) => node.label)
+            .attr("font-size", 15)
+            .attr("dx", 15)
+            .attr("dy", 5)
+            .merge(textElements)
+
         // Update and restart the simulation.
-        // simulation.nodes(nodes)
+        simulation.nodes(nodes)
+        //@ts-ignore
         simulation.force("link").links(links)
-        // simulation.alpha(1).restart()
-        simulation.restart()
+        simulation.alpha(1).restart()
     }
 
     restart()
 
     d3.interval(() => {
         links.pop()
+        nodes.pop()
         restart()
     }, 2000)
 
     d3.interval(
         () => {
             links.push({ target: "dog", source: "fox", strength: 0.7 })
+            nodes.push({ id: "fox", label: "Foxes" })
             restart()
         },
         2000,
