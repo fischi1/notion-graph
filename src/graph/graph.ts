@@ -18,11 +18,24 @@ interface PageNode extends SimulationNodeDatum {
     label: string
 }
 
-type PageLink = SimulationLinkDatum<PageNode>
+type PageLink = SimulationLinkDatum<PageNode> & {
+    strength: number
+}
 
-const nodes: PageNode[] = []
+const nodes: PageNode[] = [
+    { id: "elk", label: "Elk" },
+    { id: "mammal", label: "Mammals" },
+    { id: "dog", label: "Dogs" },
+    { id: "cat", label: "Cats" },
+    { id: "fox", label: "Foxes" }
+]
 
-const links: PageLink[] = []
+const links: PageLink[] = [
+    { target: "elk", source: "mammal", strength: 0.7 },
+    { target: "mammal", source: "dog", strength: 0.7 },
+    { target: "dog", source: "cat", strength: 0.7 },
+    { target: "dog", source: "fox", strength: 0.7 }
+]
 
 const initGraph = () => {
     addBeginTraversalListener(() => {})
@@ -37,14 +50,14 @@ const initGraph = () => {
         return randomColor()
     }
 
-    const linkElements = svg
+    let linkElements = svg
         .append("g")
-        .selectAll("line")
-        .data(links)
-        .enter() //create placeholder
-        .append("line")
-        .attr("stroke-width", 1)
+        .attr("stroke-width", 4)
         .attr("stroke", "#E5E5E5")
+        .selectAll("line")
+    // .data(links)
+    // .enter()
+    // .append("line")
 
     const nodeElements = svg
         .append("g")
@@ -97,6 +110,55 @@ const initGraph = () => {
             .attr("x2", (link: any) => link.target.x)
             .attr("y2", (link: any) => link.target.y)
     })
+
+    const restart = () => {
+        console.log("restart")
+        // Apply the general update pattern to the nodes.
+        // node = node.data(nodes, function (d) {
+        //     return d.id
+        // })
+        // node.exit().remove()
+        // node = node
+        //     .enter()
+        //     .append("circle")
+        //     .attr("fill", function (d) {
+        //         return color(d.id)
+        //     })
+        //     .attr("r", 8)
+        //     .merge(node)
+
+        // Apply the general update pattern to the links.
+        // .selectAll("line")
+        // .data(links)
+        // .enter()
+        // .append("line")
+        //@ts-ignore
+        linkElements = linkElements.data(links)
+        linkElements.exit().remove()
+        linkElements = linkElements.enter().append("line").merge(linkElements)
+
+        // Update and restart the simulation.
+        // simulation.nodes(nodes)
+        simulation.force("link").links(links)
+        // simulation.alpha(1).restart()
+        simulation.restart()
+    }
+
+    restart()
+
+    d3.interval(() => {
+        links.pop()
+        restart()
+    }, 2000)
+
+    d3.interval(
+        () => {
+            links.push({ target: "dog", source: "fox", strength: 0.7 })
+            restart()
+        },
+        2000,
+        d3.now() + 1000
+    )
 
     const handleNewPage = (event: NewPageEvent) => {
         const detail = event.detail
