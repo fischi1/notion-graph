@@ -4,7 +4,6 @@ import { addBeginTraversalListener } from "../events/BeginTraversalEvent"
 import { addEndTraversalListener } from "../events/EndTraversalEvent"
 import { NewPageEvent } from "../events/NewPageEvent"
 import hslToRgb from "../functions/hslToRgb"
-import randomColor from "../functions/randomColor"
 import "./graph.css"
 
 const maxNodeSize = 18
@@ -16,38 +15,26 @@ const hueShiftPerNode = 45
 interface PageNode extends SimulationNodeDatum {
     id: string
     label: string
+    depth: number
 }
 
 type PageLink = SimulationLinkDatum<PageNode> & {
     strength: number
 }
 
-const nodes: PageNode[] = [
-    { id: "elk", label: "Elk" },
-    { id: "mammal", label: "Mammals" },
-    { id: "dog", label: "Dogs" },
-    { id: "cat", label: "Cats" },
-    { id: "fox", label: "Foxes" }
-]
+const nodes: PageNode[] = []
 
-const links: PageLink[] = [
-    { target: "elk", source: "mammal", strength: 0.7 },
-    { target: "mammal", source: "dog", strength: 0.7 },
-    { target: "dog", source: "cat", strength: 0.7 },
-    { target: "dog", source: "fox", strength: 0.7 }
-]
+const links: PageLink[] = []
 
 const initGraph = () => {
-    addBeginTraversalListener(() => {})
-
-    addEndTraversalListener(() => {})
-
     const width = window.innerWidth
     const height = window.innerHeight
     const svg = d3.select("#graph").attr("width", width).attr("height", height)
 
     const getNodeColor = (node: PageNode) => {
-        return randomColor()
+        const hue = node.depth * hueShiftPerNode
+        const color = hslToRgb((hue % 360) / 360, 1, 0.5)
+        return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
     }
 
     let linkElements: any = svg
@@ -64,7 +51,6 @@ const initGraph = () => {
         .forceSimulation()
         .force("charge", d3.forceManyBody().strength(-70))
         .force("center", d3.forceCenter(width / 2, height / 2))
-    // .force("collision", d3.forceCollide(50))
 
     simulation.nodes(nodes)
 
@@ -73,7 +59,7 @@ const initGraph = () => {
         d3
             .forceLink<PageNode, PageLink>(links)
             .id((node) => node.id)
-            .strength((link: any) => link.strength)
+            .strength((link: any) => link.strength * 0.2)
     )
 
     simulation.on("tick", () => {
@@ -126,23 +112,26 @@ const initGraph = () => {
         simulation.alpha(1).restart()
     }
 
+    // function drag_start(d: any, node: PageNode) {
+    //     console.log(d)
+    //     if (!d.active) simulation.alphaTarget(0.3).restart()
+    //     d.fx = d.x
+    //     d.fy = d.y
+    // }
+
+    // //make sure you can't drag the circle outside the box
+    // function drag_drag(d: any) {
+    //     d.fx = d.x
+    //     d.fy = d.y
+    // }
+
+    // function drag_end(d: any) {
+    //     if (!d.active) simulation.alphaTarget(0)
+    //     d.fx = null
+    //     d.fy = null
+    // }
+
     restart()
-
-    d3.interval(() => {
-        links.pop()
-        nodes.pop()
-        restart()
-    }, 2000)
-
-    d3.interval(
-        () => {
-            links.push({ target: "dog", source: "fox", strength: 0.7 })
-            nodes.push({ id: "fox", label: "Foxes" })
-            restart()
-        },
-        2000,
-        d3.now() + 1000
-    )
 
     const handleNewPage = (event: NewPageEvent) => {
         const detail = event.detail
@@ -156,11 +145,33 @@ const initGraph = () => {
             maxNodeSize - detail.depth * depthSteps
         )
 
-        const hue = detail.depth * hueShiftPerNode
-        const color = hslToRgb((hue % 360) / 360, 1, 0.5)
-
         //add node
+        nodes.push({
+            id: detail.id,
+            label: detail.title,
+            depth: detail.depth,
+            x: width / 2,
+            y: height / 2
+        })
+
+        if (detail.parentId) {
+            links.push({
+                source: detail.parentId,
+                target: detail.id,
+                strength: 1
+            })
+        }
+
+        restart()
     }
+
+    addBeginTraversalListener(() => {
+        nodes.length = 0
+        links.length = 0
+        restart()
+    })
+
+    addEndTraversalListener(() => {})
 
     document.addEventListener("newPage", handleNewPage as any)
 }
