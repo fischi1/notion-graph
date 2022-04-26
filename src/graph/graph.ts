@@ -56,15 +56,21 @@ const links: PageLink[] = [
 const initGraph = () => {
     const width = window.innerWidth
     const height = window.innerHeight
-    // const width = 500
-    // const height = 500
     const svg = d3
         .select("#graph")
         .attr("viewBox", [0, 0, width, height])
         .attr("width", width)
         .attr("height", height)
 
-    const zoom = d3.zoom<any, any>().scaleExtent([1, 40]).on("zoom", zoomed)
+    d3.select(window).on("resize", () => {
+        const width = window.innerWidth
+        const height = window.innerHeight
+        svg.attr("viewBox", [0, 0, width, height])
+            .attr("width", width)
+            .attr("height", height)
+    })
+
+    const zoom = d3.zoom<any, any>().scaleExtent([0.1, 40]).on("zoom", zoomed)
 
     svg.call(zoom)
 
