@@ -22,14 +22,51 @@ type PageLink = SimulationLinkDatum<PageNode> & {
     strength: number
 }
 
-const nodes: PageNode[] = []
+const nodes: PageNode[] = [
+    { id: "mammal", label: "Mammals", depth: 1 },
+    { id: "dog", label: "Dogs", depth: 1 },
+    { id: "cat", label: "Cats", depth: 1 },
+    { id: "fox", label: "Foxes", depth: 1 },
+    { id: "elk", label: "Elk", depth: 1 },
+    { id: "insect", label: "Insects", depth: 1 },
+    { id: "ant", label: "Ants", depth: 1 },
+    { id: "bee", label: "Bees", depth: 1 },
+    { id: "fish", label: "Fish", depth: 1 },
+    { id: "carp", label: "Carp", depth: 1 },
+    { id: "pike", label: "Pikes", depth: 1 }
+]
 
-const links: PageLink[] = []
+const links: PageLink[] = [
+    { target: "mammal", source: "dog", strength: 0.7 },
+    { target: "mammal", source: "cat", strength: 0.7 },
+    { target: "mammal", source: "fox", strength: 0.7 },
+    { target: "mammal", source: "elk", strength: 0.7 },
+    { target: "insect", source: "ant", strength: 0.7 },
+    { target: "insect", source: "bee", strength: 0.7 },
+    { target: "fish", source: "carp", strength: 0.7 },
+    { target: "fish", source: "pike", strength: 0.7 },
+    { target: "cat", source: "elk", strength: 0.1 },
+    { target: "carp", source: "ant", strength: 0.1 },
+    { target: "elk", source: "bee", strength: 0.1 },
+    { target: "dog", source: "cat", strength: 0.1 },
+    { target: "fox", source: "ant", strength: 0.1 },
+    { target: "pike", source: "dog", strength: 0.1 }
+]
 
 const initGraph = () => {
     const width = window.innerWidth
     const height = window.innerHeight
-    const svg = d3.select("#graph").attr("width", width).attr("height", height)
+    // const width = 500
+    // const height = 500
+    const svg = d3
+        .select("#graph")
+        .attr("viewBox", [0, 0, width, height])
+        .attr("width", width)
+        .attr("height", height)
+
+    const zoom = d3.zoom<any, any>().scaleExtent([1, 40]).on("zoom", zoomed)
+
+    svg.call(zoom)
 
     const getNodeColor = (node: PageNode) => {
         const hue = node.depth * hueShiftPerNode
@@ -37,15 +74,21 @@ const initGraph = () => {
         return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
     }
 
-    let linkElements: any = svg
+    const g = svg.append("g")
+
+    function zoomed({ transform }: any) {
+        g.attr("transform", transform)
+    }
+
+    let linkElements: any = g
         .append("g")
         .attr("stroke-width", 4)
         .attr("stroke", "#E5E5E5")
         .selectAll("line")
 
-    let nodeElements: any = svg.append("g").selectAll("circle")
+    let nodeElements: any = g.append("g").selectAll("circle")
 
-    let textElements: any = svg.append("g").selectAll("text")
+    let textElements: any = g.append("g").selectAll("text")
 
     const simulation = d3
         .forceSimulation()
@@ -111,25 +154,6 @@ const initGraph = () => {
         simulation.force("link").links(links)
         simulation.alpha(1).restart()
     }
-
-    // function drag_start(d: any, node: PageNode) {
-    //     console.log(d)
-    //     if (!d.active) simulation.alphaTarget(0.3).restart()
-    //     d.fx = d.x
-    //     d.fy = d.y
-    // }
-
-    // //make sure you can't drag the circle outside the box
-    // function drag_drag(d: any) {
-    //     d.fx = d.x
-    //     d.fy = d.y
-    // }
-
-    // function drag_end(d: any) {
-    //     if (!d.active) simulation.alphaTarget(0)
-    //     d.fx = null
-    //     d.fy = null
-    // }
 
     restart()
 
