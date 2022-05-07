@@ -1,7 +1,7 @@
 import dispatchNewPageEvent from "../events/NewPageEvent"
 import { Page } from "../types/Page"
 
-const sleepTime = 150
+const sleepTime = 50
 
 const traverseExistingGraph = async (
     page: Page,

@@ -26,7 +26,7 @@ const nodes: PageNode[] = [
     { id: "mammal", label: "Mammals", depth: 1 },
     { id: "dog", label: "Dogs", depth: 1 },
     { id: "cat", label: "Cats", depth: 1 },
-    { id: "fox", label: "Foxes", depth: 1 },
+    { id: "fox", label: "Foxes", depth: 4 },
     { id: "elk", label: "Elk", depth: 1 },
     { id: "insect", label: "Insects", depth: 1 },
     { id: "ant", label: "Ants", depth: 1 },
@@ -48,7 +48,6 @@ const links: PageLink[] = [
     { target: "cat", source: "elk", strength: 0.1 },
     { target: "carp", source: "ant", strength: 0.1 },
     { target: "elk", source: "bee", strength: 0.1 },
-    { target: "dog", source: "cat", strength: 0.1 },
     { target: "fox", source: "ant", strength: 0.1 },
     { target: "pike", source: "dog", strength: 0.1 }
 ]
@@ -80,6 +79,12 @@ const initGraph = () => {
         return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
     }
 
+    const getStrokeColor = (node: PageNode) => {
+        const hue = node.depth * hueShiftPerNode
+        const color = hslToRgb((hue % 360) / 360, 1, 0.35)
+        return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+    }
+
     const g = svg.append("g")
 
     function zoomed({ transform }: any) {
@@ -88,8 +93,8 @@ const initGraph = () => {
 
     let linkElements: any = g
         .append("g")
-        .attr("stroke-width", 4)
-        .attr("stroke", "#E5E5E5")
+        .attr("stroke-width", 2)
+        .attr("stroke", "#8f8f8f")
         .selectAll("line")
 
     let nodeElements: any = g.append("g").selectAll("circle")
@@ -98,7 +103,7 @@ const initGraph = () => {
 
     const simulation = d3
         .forceSimulation()
-        .force("charge", d3.forceManyBody().strength(-70))
+        .force("charge", d3.forceManyBody().strength(-350))
         .force("center", d3.forceCenter(width / 2, height / 2))
 
     simulation.nodes(nodes)
@@ -135,8 +140,18 @@ const initGraph = () => {
         nodeElements = nodeElements
             .enter()
             .append("circle")
-            .attr("r", 10)
+            .attr("r", 25)
             .attr("fill", getNodeColor)
+            .attr("stroke", getStrokeColor)
+            .attr("stroke-width", "4")
+            .on("mouseover", function (event: any) {
+                const circle = d3.select(event.srcElement)
+                circle.attr("fill", "green")
+            })
+            .on("mouseout", function (event: any) {
+                const circle = d3.select<any, any>(event.srcElement)
+                circle.attr("fill", getNodeColor)
+            })
             .merge(nodeElements)
 
         linkElements = linkElements.data(links)
@@ -149,9 +164,11 @@ const initGraph = () => {
             .enter()
             .append("text")
             .text((node: PageNode) => node.label)
-            .attr("font-size", 15)
-            .attr("dx", 15)
-            .attr("dy", 5)
+            .attr("fill", "#e6e6e6")
+            .attr("font-family", "Source Sans Pro")
+            .attr("font-size", 25)
+            .attr("dx", 35)
+            .attr("dy", 11)
             .merge(textElements)
 
         // Update and restart the simulation.
@@ -165,10 +182,6 @@ const initGraph = () => {
 
     const handleNewPage = (event: NewPageEvent) => {
         const detail = event.detail
-
-        // if (graph.hasNode(detail.id)) {
-        //     graph.dropNode(detail.id)
-        // }
 
         const nodeSize = Math.max(
             minNodeSize,

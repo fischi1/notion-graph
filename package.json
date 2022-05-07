@@ -12,7 +12,7 @@
     "vite": "^2.7.2"
   },
   "dependencies": {
-    "@fontsource/asap": "^4.5.1",
+    "@fontsource/source-sans-pro": "^4.5.9",
     "@preact/preset-vite": "^2.1.7",
     "@types/d3": "^7.1.0",
     "d3": "^7.4.4",
