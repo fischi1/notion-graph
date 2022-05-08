@@ -4,6 +4,7 @@ import { addBeginTraversalListener } from "../events/BeginTraversalEvent"
 import { addEndTraversalListener } from "../events/EndTraversalEvent"
 import { NewPageEvent } from "../events/NewPageEvent"
 import hslToRgb from "../functions/hslToRgb"
+import randomColor from "../functions/randomColor"
 import "./graph.css"
 
 const maxNodeSize = 18
@@ -16,6 +17,7 @@ interface PageNode extends SimulationNodeDatum {
     id: string
     label: string
     depth: number
+    url?: string
 }
 
 type PageLink = SimulationLinkDatum<PageNode> & {
@@ -23,18 +25,31 @@ type PageLink = SimulationLinkDatum<PageNode> & {
 }
 
 const nodes: PageNode[] = [
-    { id: "mammal", label: "Mammals", depth: 1 },
-    { id: "dog", label: "Dogs", depth: 1 },
-    { id: "cat", label: "Cats", depth: 1 },
-    { id: "fox", label: "Foxes", depth: 4 },
-    { id: "elk", label: "Elk", depth: 1 },
-    { id: "insect", label: "Insects", depth: 1 },
-    { id: "ant", label: "Ants", depth: 1 },
-    { id: "bee", label: "Bees", depth: 1 },
-    { id: "fish", label: "Fish", depth: 1 },
-    { id: "carp", label: "Carp", depth: 1 },
-    { id: "pike", label: "Pikes", depth: 1 }
+    {
+        id: "mammal",
+        label: "Mammals",
+        depth: 1,
+        url: "https://lukasfischer.me"
+    },
+    { id: "dog", label: "Dogs", depth: 1, url: "https://lukasfischer.me" },
+    { id: "cat", label: "Cats", depth: 1, url: "https://lukasfischer.me" },
+    { id: "fox", label: "Foxes", depth: 4, url: "https://lukasfischer.me" },
+    { id: "elk", label: "Elk", depth: 1, url: "https://lukasfischer.me" },
+    {
+        id: "insect",
+        label: "Insects",
+        depth: 1,
+        url: "https://lukasfischer.me"
+    },
+    { id: "ant", label: "Ants", depth: 1, url: "https://lukasfischer.me" },
+    { id: "bee", label: "Bees", depth: 1, url: "https://lukasfischer.me" },
+    { id: "fish", label: "Fish", depth: 1, url: "https://lukasfischer.me" },
+    { id: "carp", label: "Carp", depth: 1, url: "https://lukasfischer.me" },
+    { id: "pike", label: "Pikes", depth: 1, url: "https://lukasfischer.me" }
 ]
+
+//@ts-ignore
+window.nodes = nodes
 
 const links: PageLink[] = [
     { target: "mammal", source: "dog", strength: 0.7 },
@@ -53,25 +68,20 @@ const links: PageLink[] = [
 ]
 
 const initGraph = () => {
-    const width = window.innerWidth
-    const height = window.innerHeight
-    const svg = d3
-        .select("#graph")
-        .attr("viewBox", [0, 0, width, height])
-        .attr("width", width)
-        .attr("height", height)
+    const svg = d3.select("#graph")
 
-    d3.select(window).on("resize", () => {
+    const setSize = () => {
         const width = window.innerWidth
         const height = window.innerHeight
         svg.attr("viewBox", [0, 0, width, height])
             .attr("width", width)
             .attr("height", height)
-    })
+    }
+
+    d3.select(window).on("resize", setSize)
+    setSize()
 
     const zoom = d3.zoom<any, any>().scaleExtent([0.1, 40]).on("zoom", zoomed)
-
-    svg.call(zoom)
 
     const getNodeColor = (node: PageNode) => {
         const hue = node.depth * hueShiftPerNode
@@ -87,9 +97,14 @@ const initGraph = () => {
 
     const g = svg.append("g")
 
-    function zoomed({ transform }: any) {
+    function zoomed({ transform }: { transform: string }) {
         g.attr("transform", transform)
     }
+
+    svg.call(zoom).call(
+        zoom.transform,
+        d3.zoomIdentity.translate(window.innerWidth / 2, window.innerHeight / 2)
+    )
 
     let linkElements: any = g
         .append("g")
@@ -97,14 +112,16 @@ const initGraph = () => {
         .attr("stroke", "#8f8f8f")
         .selectAll("line")
 
-    let nodeElements: any = g.append("g").selectAll("circle")
-
     let textElements: any = g.append("g").selectAll("text")
+
+    const hovered: any = g.append("g")
+
+    let nodeElements: any = g.append("g").selectAll("circle")
 
     const simulation = d3
         .forceSimulation()
         .force("charge", d3.forceManyBody().strength(-350))
-        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("center", d3.forceCenter(0, 0))
 
     simulation.nodes(nodes)
 
@@ -133,8 +150,6 @@ const initGraph = () => {
     })
 
     const restart = () => {
-        console.log("restart")
-
         nodeElements = nodeElements.data(nodes)
         nodeElements.exit().remove()
         nodeElements = nodeElements
@@ -143,14 +158,41 @@ const initGraph = () => {
             .attr("r", 25)
             .attr("fill", getNodeColor)
             .attr("stroke", getStrokeColor)
-            .attr("stroke-width", "4")
-            .on("mouseover", function (event: any) {
+            .attr("stroke-width", 4)
+            .on("mouseenter", function (event: any, data: PageNode) {
                 const circle = d3.select(event.srcElement)
                 circle.attr("fill", "green")
+                const container = hovered.append("g")
+
+                const x = data.x ?? 0
+                const y = data.y ?? 0
+
+                container.attr("transform", `translate(${x}, ${y})`)
+
+                container
+                    .append("rect")
+                    .attr("width", 300)
+                    .attr("height", 200)
+                    .attr("x", -35)
+                    .attr("y", -35)
+                    .attr("fill", randomColor())
+
+                container
+                    .append("text")
+                    .text(data.label)
+                    .attr("fill", "black")
+                    .attr("font-family", "Source Sans Pro")
+                    .attr("font-size", 25)
+                    .attr("dx", 35)
+                    .attr("dy", 11)
             })
             .on("mouseout", function (event: any) {
                 const circle = d3.select<any, any>(event.srcElement)
                 circle.attr("fill", getNodeColor)
+            })
+            .on("click", function (event: any, data: PageNode) {
+                if (!data.url) return
+                window.open(data.url, "_blank", "noopener noreferrer")
             })
             .merge(nodeElements)
 
@@ -193,8 +235,9 @@ const initGraph = () => {
             id: detail.id,
             label: detail.title,
             depth: detail.depth,
-            x: width / 2,
-            y: height / 2
+            x: 0, //TODO find position
+            y: 0,
+            url: detail.url
         })
 
         if (detail.parentId) {
