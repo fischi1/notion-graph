@@ -4,7 +4,6 @@ import { addBeginTraversalListener } from "../events/BeginTraversalEvent"
 import { addEndTraversalListener } from "../events/EndTraversalEvent"
 import { NewPageEvent } from "../events/NewPageEvent"
 import hslToRgb from "../functions/hslToRgb"
-import randomColor from "../functions/randomColor"
 import "./graph.css"
 
 const maxNodeSize = 18
@@ -200,22 +199,40 @@ const initGraph = () => {
     }
 
     function drawLabelTag(selection: AnySelection) {
+        const factor = 11.56812
+
+        const dString = (node: PageNode) => {
+            const label = d3
+                .select(`#label-${node.id}`)
+                .node() as SVGTextElement | null
+
+            const labelWidth = label?.getBBox().width ?? 0
+
+            const horizontal = 4.776 * factor + labelWidth + 0.791 * factor
+
+            return (
+                `m ${-1.718 * factor},${-2.821 * factor} ` +
+                `h ${horizontal} ` +
+                `v ${5.62 * factor} ` +
+                `h ${-horizontal} ` +
+                `L ${-2.838 * factor},${1.786 * factor} ` +
+                `L ${-2.838 * factor},${-1.701 * factor} ` +
+                "z"
+            )
+        }
+
+        selection
+            .append("path")
+            .attr("d", dString)
+            .attr("transform", `translate(0, ${0.355 * factor})`)
+            .attr("fill", "#0d0d0d")
+            .attr("style", "pointer-events:none")
+
         return selection
-            .append("rect")
-            .attr("width", (node: PageNode) => {
-                const label = d3
-                    .select(`#label-${node.id}`)
-                    .node() as SVGTextElement | null
-
-                const labelWidth = label?.getBBox().width ?? 0
-
-                return 75 + labelWidth + 20
-            })
-            .attr("height", 75)
-            .attr("style", "pointer-events:none;")
-            .attr("x", -35)
-            .attr("y", -35)
+            .append("path")
+            .attr("d", dString)
             .attr("fill", "#e2e2e2")
+            .attr("style", "pointer-events:none")
     }
 
     const restart = () => {
