@@ -24,6 +24,8 @@ type PageLink = SimulationLinkDatum<PageNode> & {
     strength: number
 }
 
+type AnySelection = d3.Selection<any, any, any, any>
+
 const nodes: PageNode[] = [
     {
         id: "mammal",
@@ -111,24 +113,24 @@ const initGraph = () => {
         d3.zoomIdentity.translate(window.innerWidth / 2, window.innerHeight / 2)
     )
 
-    let linkElements: any = g
+    let linkElements: AnySelection = g
         .append("g")
         .attr("id", "links")
         .attr("stroke-width", 2)
         .attr("stroke", "#8f8f8f")
         .selectAll("line")
 
-    let textElements: any = g
+    let textElements: AnySelection = g
         .append("g")
         .attr("id", "text-labels")
         .selectAll("text")
 
-    let nodeElements: any = g
+    let nodeElements: AnySelection = g
         .append("g")
         .attr("id", "nodes")
         .selectAll("circle")
 
-    let hoverLabelElements: any = g
+    let hoverLabelElements: AnySelection = g
         .append("g")
         .attr("id", "hover-labels")
         .selectAll("g")
@@ -169,16 +171,57 @@ const initGraph = () => {
         )
     })
 
-    const restart = () => {
-        nodeElements = nodeElements.data(nodes)
-        nodeElements.exit().remove()
-        nodeElements = nodeElements
-            .enter()
+    function drawLabel(selection: AnySelection, color = "white"): AnySelection {
+        return selection
+            .append("text")
+            .text((node: PageNode) => node.label)
+            .attr("fill", color)
+            .attr("font-family", "Source Sans Pro")
+            .attr("style", "pointer-events:none;")
+            .attr("font-size", 25)
+            .attr("dx", 35)
+            .attr("dy", 11)
+    }
+
+    function drawNode(
+        selection: AnySelection,
+        ignoreEvents = false
+    ): AnySelection {
+        const nodeSelection = selection
             .append("circle")
             .attr("r", 25)
             .attr("fill", getNodeColor)
             .attr("stroke", getStrokeColor)
             .attr("stroke-width", 4)
+
+        if (ignoreEvents)
+            return nodeSelection.attr("style", "pointer-events:none;")
+        else return nodeSelection
+    }
+
+    function drawLabelTag(selection: AnySelection) {
+        return selection
+            .append("rect")
+            .attr("width", (node: PageNode) => {
+                const label = d3
+                    .select(`#label-${node.id}`)
+                    .node() as SVGTextElement | null
+
+                const labelWidth = label?.getBBox().width ?? 0
+
+                return 75 + labelWidth + 20
+            })
+            .attr("height", 75)
+            .attr("style", "pointer-events:none;")
+            .attr("x", -35)
+            .attr("y", -35)
+            .attr("fill", "#e2e2e2")
+    }
+
+    const restart = () => {
+        nodeElements = nodeElements.data(nodes)
+        nodeElements.exit().remove()
+        nodeElements = drawNode(nodeElements.enter())
             .on("mouseenter", function (event: any, data: PageNode) {
                 document.body.style.cursor = "pointer"
                 hoverLabels.push(data)
@@ -201,16 +244,7 @@ const initGraph = () => {
 
         textElements = textElements.data(nodes)
         textElements.exit().remove()
-        textElements = textElements
-            .enter()
-            .append("text")
-            .text((node: PageNode) => node.label)
-            .attr("fill", "#e6e6e6")
-            .attr("font-family", "Source Sans Pro")
-            .attr("style", "pointer-events:none;")
-            .attr("font-size", 25)
-            .attr("dx", 35)
-            .attr("dy", 11)
+        textElements = drawLabel(textElements.enter())
             .attr("id", (node: PageNode) => `label-${node.id}`)
             .merge(textElements)
 
@@ -235,32 +269,11 @@ const initGraph = () => {
 
             .merge(hoverLabelElements)
 
-        hoverLabelElements
-            .append("rect")
-            .attr("width", (node: PageNode) => {
-                const label = d3
-                    .select(`#label-${node.id}`)
-                    .node() as SVGTextElement | null
+        hoverLabelElements.call(drawLabelTag)
 
-                const labelWidth = label?.getBBox().width ?? 0
+        hoverLabelElements.call(drawLabel, "black")
 
-                return 75 + labelWidth + 20
-            })
-            .attr("height", 75)
-            .attr("style", "pointer-events:none;")
-            .attr("x", -35)
-            .attr("y", -35)
-            .attr("fill", "#e2e2e2")
-
-        hoverLabelElements
-            .append("text")
-            .text((node: PageNode) => node.label)
-            .attr("fill", "black")
-            .attr("font-family", "Source Sans Pro")
-            .attr("style", "pointer-events:none;")
-            .attr("font-size", 25)
-            .attr("dx", 35)
-            .attr("dy", 11)
+        hoverLabelElements.call(drawNode, true)
     }
 
     restart()
