@@ -67,6 +67,11 @@ const links: PageLink[] = [
     { target: "pike", source: "dog", strength: 0.1 }
 ]
 
+const hoverLabels: PageNode[] = []
+
+//@ts-ignore
+window.hoverLabels = hoverLabels
+
 const initGraph = () => {
     const svg = d3.select("#graph")
 
@@ -108,15 +113,25 @@ const initGraph = () => {
 
     let linkElements: any = g
         .append("g")
+        .attr("id", "links")
         .attr("stroke-width", 2)
         .attr("stroke", "#8f8f8f")
         .selectAll("line")
 
-    let textElements: any = g.append("g").selectAll("text")
+    let textElements: any = g
+        .append("g")
+        .attr("id", "text-labels")
+        .selectAll("text")
 
-    const hovered: any = g.append("g")
+    let nodeElements: any = g
+        .append("g")
+        .attr("id", "nodes")
+        .selectAll("circle")
 
-    let nodeElements: any = g.append("g").selectAll("circle")
+    let hoverLabelElements: any = g
+        .append("g")
+        .attr("id", "hover-labels")
+        .selectAll("g")
 
     const simulation = d3
         .forceSimulation()
@@ -147,6 +162,11 @@ const initGraph = () => {
             .attr("y1", (link: any) => link.source.y)
             .attr("x2", (link: any) => link.target.x)
             .attr("y2", (link: any) => link.target.y)
+
+        hoverLabelElements.attr(
+            "transform",
+            (node: PageNode) => `translate(${node.x}, ${node.y})`
+        )
     })
 
     const restart = () => {
@@ -160,35 +180,14 @@ const initGraph = () => {
             .attr("stroke", getStrokeColor)
             .attr("stroke-width", 4)
             .on("mouseenter", function (event: any, data: PageNode) {
-                const circle = d3.select(event.srcElement)
-                circle.attr("fill", "green")
-                const container = hovered.append("g")
-
-                const x = data.x ?? 0
-                const y = data.y ?? 0
-
-                container.attr("transform", `translate(${x}, ${y})`)
-
-                container
-                    .append("rect")
-                    .attr("width", 300)
-                    .attr("height", 200)
-                    .attr("x", -35)
-                    .attr("y", -35)
-                    .attr("fill", randomColor())
-
-                container
-                    .append("text")
-                    .text(data.label)
-                    .attr("fill", "black")
-                    .attr("font-family", "Source Sans Pro")
-                    .attr("font-size", 25)
-                    .attr("dx", 35)
-                    .attr("dy", 11)
+                document.body.style.cursor = "pointer"
+                hoverLabels.push(data)
+                recreateLabels()
             })
-            .on("mouseout", function (event: any) {
-                const circle = d3.select<any, any>(event.srcElement)
-                circle.attr("fill", getNodeColor)
+            .on("mouseout", function (event: any, node: PageNode) {
+                document.body.style.cursor = "auto"
+                hoverLabels.splice(hoverLabels.indexOf(node), 1)
+                recreateLabels()
             })
             .on("click", function (event: any, data: PageNode) {
                 if (!data.url) return
@@ -208,9 +207,11 @@ const initGraph = () => {
             .text((node: PageNode) => node.label)
             .attr("fill", "#e6e6e6")
             .attr("font-family", "Source Sans Pro")
+            .attr("style", "pointer-events:none;")
             .attr("font-size", 25)
             .attr("dx", 35)
             .attr("dy", 11)
+            .attr("id", (node: PageNode) => `label-${node.id}`)
             .merge(textElements)
 
         // Update and restart the simulation.
@@ -220,7 +221,50 @@ const initGraph = () => {
         simulation.alpha(1).restart()
     }
 
+    function recreateLabels() {
+        hoverLabelElements = hoverLabelElements.data(hoverLabels)
+        hoverLabelElements.exit().remove()
+        hoverLabelElements = hoverLabelElements
+            .enter()
+            .append("g")
+            .attr("id", (node: PageNode) => `hover-label-${node.id}`)
+            .attr(
+                "transform",
+                (node: PageNode) => `translate(${node.x}, ${node.y})`
+            )
+
+            .merge(hoverLabelElements)
+
+        hoverLabelElements
+            .append("rect")
+            .attr("width", (node: PageNode) => {
+                const label = d3
+                    .select(`#label-${node.id}`)
+                    .node() as SVGTextElement | null
+
+                const labelWidth = label?.getBBox().width ?? 0
+
+                return 75 + labelWidth + 20
+            })
+            .attr("height", 75)
+            .attr("style", "pointer-events:none;")
+            .attr("x", -35)
+            .attr("y", -35)
+            .attr("fill", "#e2e2e2")
+
+        hoverLabelElements
+            .append("text")
+            .text((node: PageNode) => node.label)
+            .attr("fill", "black")
+            .attr("font-family", "Source Sans Pro")
+            .attr("style", "pointer-events:none;")
+            .attr("font-size", 25)
+            .attr("dx", 35)
+            .attr("dy", 11)
+    }
+
     restart()
+    recreateLabels()
 
     const handleNewPage = (event: NewPageEvent) => {
         const detail = event.detail
