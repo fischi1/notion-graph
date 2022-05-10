@@ -1,24 +1,8 @@
 import JSZip from "jszip"
-import { addBeginTraversalListener } from "../events/BeginTraversalEvent"
-import { dispatchEndTraversal } from "../events/EndTraversalEvent"
 import idToUrl from "../functions/idToUrl"
 import { createEmptyPage, Page } from "../types/Page"
-import traverseExistingGraph from "./traverseExistingGraph"
 
-const initTraverseZipGraph = async () => {
-    console.log("registering listener")
-
-    addBeginTraversalListener(handleBeginTraversal)
-}
-
-const handleBeginTraversal = async () => {
-    const input = window.document.getElementById(
-        "input-file"
-    ) as HTMLInputElement
-    const file = input?.files?.item(0)
-
-    if (!file) return
-
+const parseZipFile = async (file: File) => {
     const zip = await JSZip.loadAsync(file)
 
     const filePaths = Object.keys(zip.files)
@@ -54,10 +38,7 @@ const handleBeginTraversal = async () => {
             text
         )
     }
-    console.log(rootPage)
-    await traverseExistingGraph(rootPage, "breadth-first")
-    dispatchEndTraversal({})
-    console.log("done")
+    return rootPage
 }
 
 const validateFilePath = (filePath: string[]) => {
@@ -157,4 +138,4 @@ const getIdStart = (filename: string) => {
     return matches[matches.length - 1]
 }
 
-export default initTraverseZipGraph
+export default parseZipFile

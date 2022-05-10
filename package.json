@@ -17,8 +17,7 @@
     "@types/d3": "^7.1.0",
     "d3": "^7.4.4",
     "jszip": "^3.7.1",
-    "postcss-nested": "^5.0.6",
-    "socket.io-client": "^4.4.1"
+    "postcss-nested": "^5.0.6"
   },
   "postcss": {
     "map": true,

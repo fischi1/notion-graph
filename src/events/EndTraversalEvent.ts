@@ -1,11 +1,11 @@
 type EndTraversal = {}
 
-export type EndTraversalEvent = CustomEvent<EndTraversal>
+export type EndTraversalEvent = CustomEvent<void>
 
 const eventType = "endTraversal"
 
-const dispatchEndTraversal = (detail: EndTraversal) => {
-    document.dispatchEvent(new CustomEvent(eventType, { detail: detail }))
+const dispatchEndTraversal = () => {
+    document.dispatchEvent(new CustomEvent(eventType))
 }
 
 const addEndTraversalListener = (

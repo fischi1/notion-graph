@@ -326,9 +326,12 @@ const initGraph = () => {
     }
 
     addBeginTraversalListener(() => {
+        // clear the graph
         nodes.length = 0
         links.length = 0
+        hoverLabels.length = 0
         restart()
+        recreateLabels()
     })
 
     addEndTraversalListener(() => {})

@@ -1,5 +1,5 @@
 type BeginTraversal = {
-    notionUrl: string
+    file: File
 }
 
 export type BeginTraversalEvent = CustomEvent<BeginTraversal>

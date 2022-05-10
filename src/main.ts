@@ -1,7 +1,7 @@
 import initGraph from "./graph/graph"
-import initTraverseZipGraph from "./graph/traverseZipGraph"
+import initHandlers from "./graph/traversalHandlers"
 import "./main.css"
 import "./reset.css"
 
 initGraph()
-initTraverseZipGraph()
+initHandlers()

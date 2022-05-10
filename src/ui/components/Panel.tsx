@@ -1,4 +1,4 @@
-import { useEffect, useState } from "preact/hooks"
+import { useEffect, useState, useRef } from "preact/hooks"
 import { dispatchBeginTraversal } from "../../events/BeginTraversalEvent"
 import { addEndTraversalListener } from "../../events/EndTraversalEvent"
 import Button from "./Button"
@@ -7,16 +7,19 @@ import "./Panel.css"
 type Props = { onClose: () => void }
 
 const Panel = ({ onClose }: Props) => {
+    const fileInputRef = useRef<HTMLInputElement | null>(null)
     const [inProgress, setInProgress] = useState(false)
 
     const handleStart = () => {
-        dispatchBeginTraversal({ notionUrl: "" })
+        const file = fileInputRef.current?.files?.item(0) ?? null
+        if (!file) return
+        dispatchBeginTraversal({ file })
         setInProgress(true)
     }
 
     useEffect(() => {
         addEndTraversalListener(() => setInProgress(false))
-    }, [setInProgress])
+    }, [])
 
     return (
         <div className="panel">
@@ -30,6 +33,7 @@ const Panel = ({ onClose }: Props) => {
                             name="input-file"
                             id="input-file"
                             accept="application/zip"
+                            ref={fileInputRef}
                         />
                     </div>
                     <Button onClick={handleStart}>Start</Button>

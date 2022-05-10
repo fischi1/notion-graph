@@ -3,7 +3,7 @@ import { Page } from "../types/Page"
 
 const sleepTime = 50
 
-const traverseExistingGraph = async (
+const traversePages = async (
     page: Page,
     traversal: "breadth-first" | "depth-first"
 ) => {
@@ -64,4 +64,4 @@ const traverseDepthFirst = async (page: Page) => {
     processPage(page, 0)
 }
 
-export default traverseExistingGraph
+export default traversePages
