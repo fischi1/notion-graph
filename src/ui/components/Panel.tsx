@@ -38,7 +38,7 @@ const Panel = ({ onClose }: Props) => {
                             type="file"
                             name="input-file"
                             id="input-file"
-                            accept="application/zip"
+                            accept="application/zip,application/json"
                             ref={fileInputRef}
                         />
                     </div>

@@ -1,7 +1,7 @@
 import dispatchNewPageEvent from "../events/NewPageEvent"
 import { Page } from "../types/Page"
 
-const sleepTime = 50
+const sleepTime = 25
 
 const traversePages = async (
     page: Page,
