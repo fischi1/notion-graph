@@ -1,4 +1,5 @@
 import JSZip from "jszip"
+import { dispatchDoneParsingZip } from "../events/DoneParsingZip"
 import idToUrl from "../functions/idToUrl"
 import { createEmptyPage, Page } from "../types/Page"
 
@@ -38,6 +39,7 @@ const parseZipFile = async (file: File) => {
             text
         )
     }
+    dispatchDoneParsingZip({ file: file, root: rootPage })
     return rootPage
 }
 

@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "preact/hooks"
 import { dispatchBeginTraversal } from "../../events/BeginTraversalEvent"
 import { addEndTraversalListener } from "../../events/EndTraversalEvent"
 import Button from "./Button"
+import JsonDownloadLink from "./JsonDownloadLink"
 import "./Panel.css"
 
 type Props = { onClose: () => void }
@@ -23,6 +24,11 @@ const Panel = ({ onClose }: Props) => {
 
     return (
         <div className="panel">
+            <div>
+                <JsonDownloadLink />
+            </div>
+            <br />
+            <br />
             {inProgress ? (
                 <p>In Progress</p>
             ) : (
