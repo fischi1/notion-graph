@@ -304,13 +304,23 @@ const initGraph = () => {
             maxNodeSize - detail.depth * depthSteps
         )
 
-        //add node
+        let x = 0
+        let y = 0
+        if (detail.parentId) {
+            const parentNode = nodes.find((node) => node.id === detail.parentId)
+            x = parentNode?.x ?? 0
+            y = parentNode?.y ?? 0
+
+            x += Math.random() * 200 - 100
+            y += Math.random() * 200 - 100
+        }
+
         nodes.push({
             id: detail.id,
             label: detail.title,
             depth: detail.depth,
-            x: 0, //TODO find position
-            y: 0,
+            x: x,
+            y: y,
             url: detail.url
         })
 

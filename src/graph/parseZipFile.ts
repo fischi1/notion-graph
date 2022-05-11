@@ -46,11 +46,11 @@ const parseZipFile = async (file: File) => {
 const validateFilePath = (filePath: string[]) => {
     for (let i = 0; i < filePath.length; i++) {
         if (i >= filePath.length - 1) {
-            if (!filePath[i].match(/^.*\s[0-9a-f]{5}.html$/)) {
+            if (!filePath[i].match(/^.*\s[0-9a-f]{32}.html$/)) {
                 return false
             }
         } else {
-            if (!filePath[i].match(/^.*\s[0-9a-f]{5}$/)) {
+            if (!filePath[i].match(/^.*\s[0-9a-f]{32}$/)) {
                 return false
             }
         }
