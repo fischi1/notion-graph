@@ -25,48 +25,21 @@ type PageLink = SimulationLinkDatum<PageNode> & {
 
 type AnySelection = d3.Selection<any, any, any, any>
 
-const nodes: PageNode[] = [
-    {
-        id: "mammal",
-        label: "Mammals",
-        depth: 1,
-        url: "https://lukasfischer.me"
-    },
-    { id: "dog", label: "Dogs", depth: 1, url: "https://lukasfischer.me" },
-    { id: "cat", label: "Cats", depth: 1, url: "https://lukasfischer.me" },
-    { id: "fox", label: "Foxes", depth: 4, url: "https://lukasfischer.me" },
-    { id: "elk", label: "Elk", depth: 1, url: "https://lukasfischer.me" },
-    {
-        id: "insect",
-        label: "Insects",
-        depth: 1,
-        url: "https://lukasfischer.me"
-    },
-    { id: "ant", label: "Ants", depth: 1, url: "https://lukasfischer.me" },
-    { id: "bee", label: "Bees", depth: 1, url: "https://lukasfischer.me" },
-    { id: "fish", label: "Fish", depth: 1, url: "https://lukasfischer.me" },
-    { id: "carp", label: "Carp", depth: 1, url: "https://lukasfischer.me" },
-    { id: "pike", label: "Pikes", depth: 1, url: "https://lukasfischer.me" }
-]
+type StoredGraph = {
+    nodes: PageNode[]
+    links: PageLink[]
+    alpha: number
+}
+
+const nodes: PageNode[] = []
 
 //@ts-ignore
 window.nodes = nodes
 
-const links: PageLink[] = [
-    { target: "mammal", source: "dog", strength: 0.7 },
-    { target: "mammal", source: "cat", strength: 0.7 },
-    { target: "mammal", source: "fox", strength: 0.7 },
-    { target: "mammal", source: "elk", strength: 0.7 },
-    { target: "insect", source: "ant", strength: 0.7 },
-    { target: "insect", source: "bee", strength: 0.7 },
-    { target: "fish", source: "carp", strength: 0.7 },
-    { target: "fish", source: "pike", strength: 0.7 },
-    { target: "cat", source: "elk", strength: 0.1 },
-    { target: "carp", source: "ant", strength: 0.1 },
-    { target: "elk", source: "bee", strength: 0.1 },
-    { target: "fox", source: "ant", strength: 0.1 },
-    { target: "pike", source: "dog", strength: 0.1 }
-]
+const links: PageLink[] = []
+
+//@ts-ignore
+window.links = links
 
 const hoverLabels: PageNode[] = []
 
@@ -87,7 +60,7 @@ const initGraph = () => {
     d3.select(window).on("resize", setSize)
     setSize()
 
-    const zoom = d3.zoom<any, any>().scaleExtent([0.1, 40]).on("zoom", zoomed)
+    const zoom = d3.zoom<any, any>().scaleExtent([0.02, 40]).on("zoom", zoomed)
 
     const getNodeColor = (node: PageNode) => {
         const hue = node.depth * hueShiftPerNode
@@ -139,6 +112,18 @@ const initGraph = () => {
         .force("charge", d3.forceManyBody().strength(-350))
         .force("center", d3.forceCenter(0, 0))
 
+    //import if existing in LS
+    const storedGraphLocalStorage = localStorage.getItem("stored-graph")
+    if (storedGraphLocalStorage) {
+        const storedGraph = JSON.parse(storedGraphLocalStorage) as StoredGraph
+        nodes.length = 0
+        nodes.push(...storedGraph.nodes)
+        links.length = 0
+        links.push(...storedGraph.links)
+        simulation.alpha(storedGraph.alpha)
+    }
+    //end import
+
     simulation.nodes(nodes)
 
     simulation.force(
@@ -151,12 +136,12 @@ const initGraph = () => {
 
     simulation.on("tick", () => {
         nodeElements
-            .attr("cx", (node: PageNode) => node.x ?? 0)
-            .attr("cy", (node: PageNode) => node.y ?? 0)
+            .attr("cx", (node: any) => node.x)
+            .attr("cy", (node: any) => node.y)
 
         textElements
-            .attr("x", (node: PageNode) => node.x ?? 0)
-            .attr("y", (node: PageNode) => node.y ?? 0)
+            .attr("x", (node: any) => node.x)
+            .attr("y", (node: any) => node.y)
 
         linkElements
             .attr("x1", (link: any) => link.source.x)
@@ -168,6 +153,11 @@ const initGraph = () => {
             "transform",
             (node: PageNode) => `translate(${node.x}, ${node.y})`
         )
+    })
+
+    simulation.on("end", () => {
+        console.log("end")
+        storeInLocalStorage()
     })
 
     function drawLabel(selection: AnySelection, color = "white"): AnySelection {
@@ -235,7 +225,7 @@ const initGraph = () => {
             .attr("style", "pointer-events:none")
     }
 
-    const restart = () => {
+    const restart = (resetAlpha = false) => {
         nodeElements = nodeElements.data(nodes)
         nodeElements.exit().remove()
         nodeElements = drawNode(nodeElements.enter())
@@ -269,7 +259,8 @@ const initGraph = () => {
         simulation.nodes(nodes)
         //@ts-ignore
         simulation.force("link").links(links)
-        simulation.alpha(1).restart()
+        if (resetAlpha) simulation.alpha(1)
+        simulation.restart()
     }
 
     function recreateLabels() {
@@ -293,7 +284,7 @@ const initGraph = () => {
         hoverLabelElements.call(drawNode, true)
     }
 
-    restart()
+    restart(false)
     recreateLabels()
 
     const handleNewPage = (event: NewPageEvent) => {
@@ -342,11 +333,34 @@ const initGraph = () => {
         hoverLabels.length = 0
         restart()
         recreateLabels()
+        zoom.translateTo(svg, 0, 0)
+        zoom.scaleTo(svg, 1)
     })
 
-    addEndTraversalListener(() => {})
+    addEndTraversalListener(() => {
+        storeInLocalStorage()
+    })
 
     document.addEventListener("newPage", handleNewPage as any)
+
+    function storeInLocalStorage() {
+        //@ts-expect-error
+        const copiedLinks = (structuredClone(links) as PageLink[]).map(
+            (link) => {
+                return {
+                    ...link,
+                    source: (link.source as PageNode).id,
+                    target: (link.target as PageNode).id
+                }
+            }
+        ) as PageLink[]
+        const graphToStore: StoredGraph = {
+            nodes: nodes,
+            links: copiedLinks,
+            alpha: simulation.alpha()
+        }
+        localStorage.setItem("stored-graph", JSON.stringify(graphToStore))
+    }
 }
 
 export default initGraph

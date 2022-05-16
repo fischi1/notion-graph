@@ -15,7 +15,6 @@ const initHandlers = () => {
             root = await parseZipFile(file)
         }
 
-        console.log(root)
         await traversePages(root, "breadth-first")
         dispatchEndTraversal()
     })
