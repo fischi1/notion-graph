@@ -156,7 +156,6 @@ const initGraph = () => {
     })
 
     simulation.on("end", () => {
-        console.log("end")
         storeInLocalStorage()
     })
 
@@ -284,7 +283,7 @@ const initGraph = () => {
         hoverLabelElements.call(drawNode, true)
     }
 
-    restart(false)
+    restart()
     recreateLabels()
 
     const handleNewPage = (event: NewPageEvent) => {
@@ -323,7 +322,7 @@ const initGraph = () => {
             })
         }
 
-        restart()
+        restart(true)
     }
 
     addBeginTraversalListener(() => {
