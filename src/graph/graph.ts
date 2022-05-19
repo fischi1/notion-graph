@@ -7,7 +7,7 @@ import downloadSvgAsPng from "../functions/downloadSvgAsPng"
 import hslToRgb from "../functions/hslToRgb"
 import "./graph.css"
 
-const maxNodeSize = 40
+const maxNodeSize = 42
 const minNodeSize = 20
 const depthStep = 7
 
@@ -198,9 +198,10 @@ const initGraph = () => {
     }
 
     function drawLabelTag(selection: AnySelection) {
-        const factor = 11.56812
+        const multiplier = 12
 
         const dString = (node: PageNode) => {
+            const factor = multiplier * (getNodeRadius(node) / 25)
             const label = d3
                 .select(`#label-${node.id}`)
                 .node() as SVGTextElement | null
@@ -223,7 +224,10 @@ const initGraph = () => {
         selection
             .append("path")
             .attr("d", dString)
-            .attr("transform", `translate(0, ${0.355 * factor})`)
+            .attr("transform", (node: PageNode) => {
+                const factor = multiplier * (getNodeRadius(node) / 25)
+                return `translate(0, ${0.355 * factor})`
+            })
             .attr("fill", "#0d0d0d")
             .attr("style", "pointer-events:none")
 
