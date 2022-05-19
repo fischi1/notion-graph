@@ -20,9 +20,7 @@ interface PageNode extends SimulationNodeDatum {
     url?: string
 }
 
-type PageLink = SimulationLinkDatum<PageNode> & {
-    strength: number
-}
+type PageLink = SimulationLinkDatum<PageNode>
 
 type AnySelection = d3.Selection<any, any, any, any>
 
@@ -114,17 +112,20 @@ const initGraph = () => {
 
     const simulation = d3
         .forceSimulation()
-        .force("charge", d3.forceManyBody().strength(-250).distanceMin(150))
+        .force("charge", d3.forceManyBody().strength(-100))
         .force("center", d3.forceCenter(0, 0))
-        .force("collision", d3.forceCollide(getNodeRadius))
+        .force(
+            "collision",
+            d3.forceCollide((node: PageNode) => getNodeRadius(node) + 5)
+        )
 
     simulation.force(
         "link",
         d3
             .forceLink<PageNode, PageLink>(links)
             .id((node) => node.id)
-            .distance(60)
-            .strength((link: PageLink) => link.strength * 0.5)
+            .distance(100)
+            .strength(0.2)
     )
 
     //@ts-expect-error
@@ -326,8 +327,7 @@ const initGraph = () => {
         if (detail.parentId) {
             links.push({
                 source: detail.parentId,
-                target: detail.id,
-                strength: 1
+                target: detail.id
             })
         }
 
