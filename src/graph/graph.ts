@@ -3,12 +3,13 @@ import { SimulationLinkDatum, SimulationNodeDatum } from "d3"
 import { addBeginTraversalListener } from "../events/BeginTraversalEvent"
 import { addEndTraversalListener } from "../events/EndTraversalEvent"
 import { NewPageEvent } from "../events/NewPageEvent"
+import downloadSvgAsPng from "../functions/downloadSvgAsPng"
 import hslToRgb from "../functions/hslToRgb"
 import "./graph.css"
 
-const maxNodeSize = 18
-const minNodeSize = 4
-const depthSteps = 3
+const maxNodeSize = 40
+const minNodeSize = 20
+const depthStep = 7
 
 const hueShiftPerNode = 45
 
@@ -74,6 +75,10 @@ const initGraph = () => {
         return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
     }
 
+    const getNodeRadius = (node: PageNode) => {
+        return Math.max(minNodeSize, maxNodeSize - node.depth * depthStep)
+    }
+
     const g = svg.append("g")
 
     function zoomed({ transform }: { transform: string }) {
@@ -109,8 +114,23 @@ const initGraph = () => {
 
     const simulation = d3
         .forceSimulation()
-        .force("charge", d3.forceManyBody().strength(-350))
+        .force("charge", d3.forceManyBody().strength(-250).distanceMin(150))
         .force("center", d3.forceCenter(0, 0))
+        .force("collision", d3.forceCollide(getNodeRadius))
+
+    simulation.force(
+        "link",
+        d3
+            .forceLink<PageNode, PageLink>(links)
+            .id((node) => node.id)
+            .distance(60)
+            .strength((link: PageLink) => link.strength * 0.5)
+    )
+
+    //@ts-expect-error
+    window.resetAlpha = () => {
+        simulation.alpha(1).restart()
+    }
 
     //import if existing in LS
     const storedGraphLocalStorage = localStorage.getItem("stored-graph")
@@ -123,16 +143,6 @@ const initGraph = () => {
         simulation.alpha(storedGraph.alpha)
     }
     //end import
-
-    simulation.nodes(nodes)
-
-    simulation.force(
-        "link",
-        d3
-            .forceLink<PageNode, PageLink>(links)
-            .id((node) => node.id)
-            .strength((link: any) => link.strength * 0.2)
-    )
 
     simulation.on("tick", () => {
         nodeElements
@@ -167,7 +177,7 @@ const initGraph = () => {
             .attr("font-family", "Source Sans Pro")
             .attr("style", "pointer-events:none;")
             .attr("font-size", 25)
-            .attr("dx", 35)
+            .attr("dx", (node: PageNode) => getNodeRadius(node) + 10)
             .attr("dy", 11)
     }
 
@@ -177,7 +187,7 @@ const initGraph = () => {
     ): AnySelection {
         const nodeSelection = selection
             .append("circle")
-            .attr("r", 25)
+            .attr("r", getNodeRadius)
             .attr("fill", getNodeColor)
             .attr("stroke", getStrokeColor)
             .attr("stroke-width", 4)
@@ -288,11 +298,6 @@ const initGraph = () => {
 
     const handleNewPage = (event: NewPageEvent) => {
         const detail = event.detail
-
-        const nodeSize = Math.max(
-            minNodeSize,
-            maxNodeSize - detail.depth * depthSteps
-        )
 
         let x = 0
         let y = 0
