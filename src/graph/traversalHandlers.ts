@@ -1,5 +1,6 @@
 import { addBeginTraversalListener } from "../events/BeginTraversalEvent"
 import { dispatchEndTraversal } from "../events/EndTraversalEvent"
+import collapsePageTooManyChildren from "../functions/collapsePageTooManyChildren"
 import { Page } from "../types/Page"
 import parseZipFile from "./parseZipFile"
 import traversePages from "./traversePages"
@@ -14,6 +15,8 @@ const initHandlers = () => {
         } else {
             root = await parseZipFile(file)
         }
+
+        collapsePageTooManyChildren(root, 15)
 
         await traversePages(root, "breadth-first")
         dispatchEndTraversal()

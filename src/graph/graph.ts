@@ -176,6 +176,7 @@ const initGraph = () => {
     })
 
     simulation.on("end", () => {
+        console.log("simulation ended")
         storeInLocalStorage()
     })
 
