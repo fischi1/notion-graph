@@ -1,10 +1,23 @@
-import { PageNode } from "../graph/graph"
+import { getNodeRadius, PageNode } from "../graph/graph"
 import downloadSvgAsPng from "./downloadSvgAsPng"
+
+const calculateLabelOffset = (svg: HTMLOrSVGImageElement, node: PageNode) => {
+    const label = svg.querySelector(
+        `#label-${node.id}`
+    ) as SVGTextElement | null
+
+    if (!label) {
+        return 0
+    }
+
+    return label.getBBox().width
+}
 
 const exportGraphAsImage = (
     orginalSvg: HTMLOrSVGImageElement,
     nodes: PageNode[],
-    multiplier: number
+    multiplier: number,
+    padding: number
 ) => {
     const svg = orginalSvg.cloneNode(true) as HTMLOrSVGImageElement
 
@@ -31,7 +44,8 @@ const exportGraphAsImage = (
         if (y < minY) {
             minY = y
             minYNode = node
-        } else if (y > maxY) {
+        }
+        if (y > maxY) {
             maxY = y
             maxYNode = node
         }
@@ -39,19 +53,39 @@ const exportGraphAsImage = (
         if (x < minX) {
             minX = x
             minXNode = node
-        } else if (x > maxX) {
+        }
+        if (x > maxX) {
             maxX = x
             maxXNode = node
         }
     }
 
-    if (!minYNode || !maxYNode || !minXNode || !maxXNode) return
+    if (!minYNode || !maxYNode || !minXNode || !maxXNode) {
+        console.error(
+            "minYNode",
+            minYNode,
+            "maxYNode",
+            maxYNode,
+            "minXNode",
+            minXNode,
+            "maxXNode",
+            maxXNode
+        )
+        return Promise.reject()
+    }
 
     console.log("minY", minY, minYNode)
     console.log("maxY", maxY, maxYNode)
 
     console.log("minX", minX, minXNode)
     console.log("maxX", maxX, maxXNode)
+
+    const offset = getNodeRadius(minXNode) + padding
+
+    minX -= offset
+    maxX += offset + calculateLabelOffset(orginalSvg, maxXNode)
+    minY -= offset
+    maxY += offset
 
     let width = maxX - minX
     let height = maxY - minY
@@ -75,8 +109,7 @@ const exportGraphAsImage = (
     const zoomGroup = svg.querySelector("#zoom-group")
 
     if (!zoomGroup) {
-        console.error("no element #zoom-group found in svg")
-        return
+        return Promise.reject("no element #zoom-group found in svg")
     }
 
     zoomGroup.setAttribute(
@@ -92,7 +125,7 @@ const exportGraphAsImage = (
             .trim()
             .replaceAll(" ", "_") + ".png"
 
-    downloadSvgAsPng(svg, {
+    return downloadSvgAsPng(svg, {
         filename: fileName,
         width: width,
         height: height,

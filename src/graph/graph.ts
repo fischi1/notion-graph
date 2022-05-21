@@ -45,6 +45,22 @@ const hoverLabels: PageNode[] = []
 //@ts-ignore
 window.hoverLabels = hoverLabels
 
+const getNodeColor = (node: PageNode) => {
+    const hue = node.depth * hueShiftPerNode
+    const color = hslToRgb((hue % 360) / 360, 1, 0.5)
+    return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+}
+
+const getStrokeColor = (node: PageNode) => {
+    const hue = node.depth * hueShiftPerNode
+    const color = hslToRgb((hue % 360) / 360, 1, 0.35)
+    return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+}
+
+const getNodeRadius = (node: PageNode) => {
+    return Math.max(minNodeSize, maxNodeSize - node.depth * depthStep)
+}
+
 const initGraph = () => {
     const svg = d3.select("#graph")
 
@@ -60,22 +76,6 @@ const initGraph = () => {
     setSize()
 
     const zoom = d3.zoom<any, any>().scaleExtent([0.02, 40]).on("zoom", zoomed)
-
-    const getNodeColor = (node: PageNode) => {
-        const hue = node.depth * hueShiftPerNode
-        const color = hslToRgb((hue % 360) / 360, 1, 0.5)
-        return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
-    }
-
-    const getStrokeColor = (node: PageNode) => {
-        const hue = node.depth * hueShiftPerNode
-        const color = hslToRgb((hue % 360) / 360, 1, 0.35)
-        return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
-    }
-
-    const getNodeRadius = (node: PageNode) => {
-        return Math.max(minNodeSize, maxNodeSize - node.depth * depthStep)
-    }
 
     const zoomGroup = svg.append("g").attr("id", "zoom-group")
 
@@ -408,9 +408,11 @@ const initGraph = () => {
         exportGraphAsImage(
             svg.node() as HTMLOrSVGImageElement,
             nodes,
-            multiplier
+            multiplier,
+            25
         )
     }
 }
 
 export default initGraph
+export { getNodeRadius }
