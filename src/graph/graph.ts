@@ -133,6 +133,15 @@ const initGraph = () => {
         simulation.alpha(1).restart()
     }
 
+    //@ts-expect-error
+    window.resetPosition = () => {
+        nodes.forEach((node) => {
+            node.x = Math.random() * 2000 - 1000
+            node.y = Math.random() * 2000 - 1000
+        })
+        simulation.alpha(1).restart()
+    }
+
     //import if existing in LS
     const storedGraphLocalStorage = localStorage.getItem("stored-graph")
     if (storedGraphLocalStorage) {
@@ -186,12 +195,36 @@ const initGraph = () => {
         selection: AnySelection,
         ignoreEvents = false
     ): AnySelection {
+        function handleDragStart(event: any, d: PageNode) {
+            if (!event.active) simulation.alphaTarget(1).restart()
+            d.fx = d.x
+            d.fy = d.y
+        }
+
+        function handleDrag(event: any, d: PageNode) {
+            d.fx = event.x
+            d.fy = event.y
+        }
+
+        function handleDragEnd(event: any, d: PageNode) {
+            if (!event.active) simulation.alphaTarget(0)
+            d.fx = undefined
+            d.fy = undefined
+        }
+
+        const drag = d3
+            .drag<any, PageNode>()
+            .on("start", handleDragStart)
+            .on("drag", handleDrag)
+            .on("end", handleDragEnd)
+
         const nodeSelection = selection
             .append("circle")
             .attr("r", getNodeRadius)
             .attr("fill", getNodeColor)
             .attr("stroke", getStrokeColor)
             .attr("stroke-width", 4)
+            .call(drag as any)
 
         if (ignoreEvents)
             return nodeSelection.attr("style", "pointer-events:none;")
