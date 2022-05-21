@@ -3,7 +3,7 @@ import { SimulationLinkDatum, SimulationNodeDatum } from "d3"
 import { addBeginTraversalListener } from "../events/BeginTraversalEvent"
 import { addEndTraversalListener } from "../events/EndTraversalEvent"
 import { NewPageEvent } from "../events/NewPageEvent"
-import downloadSvgAsPng from "../functions/downloadSvgAsPng"
+import exportGraphAsImage from "../functions/exportGraphAsImage"
 import hslToRgb from "../functions/hslToRgb"
 import "./graph.css"
 
@@ -13,7 +13,7 @@ const depthStep = 7
 
 const hueShiftPerNode = 45
 
-interface PageNode extends SimulationNodeDatum {
+export interface PageNode extends SimulationNodeDatum {
     id: string
     label: string
     depth: number
@@ -77,10 +77,10 @@ const initGraph = () => {
         return Math.max(minNodeSize, maxNodeSize - node.depth * depthStep)
     }
 
-    const g = svg.append("g")
+    const zoomGroup = svg.append("g").attr("id", "zoom-group")
 
     function zoomed({ transform }: { transform: string }) {
-        g.attr("transform", transform)
+        zoomGroup.attr("transform", transform)
     }
 
     svg.call(zoom).call(
@@ -88,24 +88,24 @@ const initGraph = () => {
         d3.zoomIdentity.translate(window.innerWidth / 2, window.innerHeight / 2)
     )
 
-    let linkElements: AnySelection = g
+    let linkElements: AnySelection = zoomGroup
         .append("g")
         .attr("id", "links")
         .attr("stroke-width", 2)
         .attr("stroke", "#8f8f8f")
         .selectAll("line")
 
-    let textElements: AnySelection = g
+    let textElements: AnySelection = zoomGroup
         .append("g")
         .attr("id", "text-labels")
         .selectAll("text")
 
-    let nodeElements: AnySelection = g
+    let nodeElements: AnySelection = zoomGroup
         .append("g")
         .attr("id", "nodes")
         .selectAll("circle")
 
-    let hoverLabelElements: AnySelection = g
+    let hoverLabelElements: AnySelection = zoomGroup
         .append("g")
         .attr("id", "hover-labels")
         .selectAll("g")
@@ -401,6 +401,15 @@ const initGraph = () => {
             alpha: simulation.alpha()
         }
         localStorage.setItem("stored-graph", JSON.stringify(graphToStore))
+    }
+
+    //@ts-expect-error
+    window.exportAsImage = (multiplier: number) => {
+        exportGraphAsImage(
+            svg.node() as HTMLOrSVGImageElement,
+            nodes,
+            multiplier
+        )
     }
 }
 
