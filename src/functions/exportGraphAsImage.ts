@@ -1,11 +1,11 @@
 import { PageNode } from "../graph/graph"
+import downloadSvgAsPng from "./downloadSvgAsPng"
 
 const exportGraphAsImage = (
     orginalSvg: HTMLOrSVGImageElement,
     nodes: PageNode[],
     multiplier: number
 ) => {
-    // const svg = orginalSvg
     const svg = orginalSvg.cloneNode(true) as HTMLOrSVGImageElement
 
     //find top-most node
@@ -85,6 +85,19 @@ const exportGraphAsImage = (
             height / 2 - centerY
         }) scale(${multiplier})`
     )
+
+    const fileName =
+        nodes[0].label
+            .replace(/[^a-zA-Z0-9 ]/g, "")
+            .trim()
+            .replaceAll(" ", "_") + ".png"
+
+    downloadSvgAsPng(svg, {
+        filename: fileName,
+        width: width,
+        height: height,
+        backgroundColor: "#222220"
+    })
 }
 
 export default exportGraphAsImage
