@@ -386,7 +386,6 @@ const initGraph = () => {
     document.addEventListener("newPage", handleNewPage as any)
 
     function storeInLocalStorage() {
-        //@ts-expect-error
         const copiedLinks = (structuredClone(links) as PageLink[]).map(
             (link) => {
                 return {

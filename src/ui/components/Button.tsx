@@ -1,8 +1,8 @@
-import type { ComponentChildren } from "preact"
+import { ReactNode } from "react"
 
 type Props = {
-    onClick?: JSX.MouseEventHandler<HTMLButtonElement>
-    children?: ComponentChildren
+    onClick?: React.MouseEventHandler<HTMLButtonElement>
+    children?: ReactNode
 }
 
 const Button = ({ onClick, children }: Props) => {

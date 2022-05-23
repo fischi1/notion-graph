@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "preact/hooks"
+import { useEffect, useRef, useState } from "react"
 import { dispatchBeginTraversal } from "../../events/BeginTraversalEvent"
 import { addEndTraversalListener } from "../../events/EndTraversalEvent"
 import Button from "./Button"
@@ -24,11 +24,6 @@ const Panel = ({ onClose }: Props) => {
 
     return (
         <div className="panel">
-            <div>
-                <JsonDownloadLink />
-            </div>
-            <br />
-            <br />
             {inProgress ? (
                 <p>In Progress</p>
             ) : (
@@ -38,13 +33,18 @@ const Panel = ({ onClose }: Props) => {
                             type="file"
                             name="input-file"
                             id="input-file"
-                            accept="application/zip,application/json"
+                            accept="application/zip"
                             ref={fileInputRef}
                         />
                     </div>
                     <Button onClick={handleStart}>Start</Button>
                 </div>
             )}
+            <br />
+            <br />
+            <div>
+                <JsonDownloadLink />
+            </div>
         </div>
     )
 }
