@@ -5,9 +5,9 @@ import Button from "./Button"
 import JsonDownloadLink from "./JsonDownloadLink"
 import "./Panel.css"
 
-type Props = { onClose: () => void }
+type Props = {}
 
-const Panel = ({ onClose }: Props) => {
+const Panel = ({}: Props) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const [inProgress, setInProgress] = useState(false)
 
@@ -24,6 +24,11 @@ const Panel = ({ onClose }: Props) => {
 
     return (
         <div className="panel">
+            <div className="corner corner-top-left" />
+            <div className="corner corner-bottom-left" />
+            <div className="border border-top" />
+            <div className="border border-left" />
+            <div className="border border-bottom" />
             {inProgress ? (
                 <p>In Progress</p>
             ) : (

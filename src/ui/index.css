@@ -1,6 +1,7 @@
 #ui {
+    font-family: "Source Sans Pro";
+    color: white;
     position: absolute;
     z-index: 1000;
-    font-family: "Source Sans Pro";
     margin: 0.5rem;
 }

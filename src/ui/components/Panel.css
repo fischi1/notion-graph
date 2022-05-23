@@ -1,9 +1,52 @@
 .panel {
-    width: 100ch;
-    max-width: 95vw;
-    background-color: rgba(255, 255, 255, 0.4);
-    padding: 1rem;
-    border-radius: 3px;
-    border: 2px solid black;
-    box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.3);
+    --angle-size: 15px;
+    --color: rgba(0, 0, 0, 0.8157);
+    position: relative;
+    width: 500px;
+    background-color: var(--color);
+
+    margin: var(--angle-size);
+    padding: 0px;
+
+    .corner {
+        position: absolute;
+        border-width: var(--angle-size) var(--angle-size) 0px 0px;
+        border-style: solid;
+
+        &.corner-top-left {
+            top: calc(var(--angle-size) * -1);
+            left: calc(var(--angle-size) * -1);
+            border-color: transparent var(--color) var(--color) transparent;
+        }
+
+        &.corner-bottom-left {
+            top: 100%;
+            left: calc(var(--angle-size) * -1);
+            border-color: transparent var(--color) var(--color) transparent;
+            transform: rotate(-90deg);
+        }
+    }
+
+    .border {
+        position: absolute;
+        background-color: var(--color);
+        &.border-top {
+            top: calc(var(--angle-size) * -1);
+            left: 0;
+            width: 100%;
+            height: var(--angle-size);
+        }
+        &.border-left {
+            top: 0;
+            left: calc(var(--angle-size) * -1);
+            width: var(--angle-size);
+            height: 100%;
+        }
+        &.border-bottom {
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: var(--angle-size);
+        }
+    }
 }
