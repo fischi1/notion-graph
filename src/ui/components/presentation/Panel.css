@@ -2,11 +2,11 @@
     --angle-size: 15px;
     --color: rgba(0, 0, 0, 0.8157);
     position: relative;
-    width: 500px;
     background-color: var(--color);
 
     margin: var(--angle-size);
     padding: 0px;
+    padding-right: calc(var(--angle-size) + 5px);
 
     .corner {
         position: absolute;

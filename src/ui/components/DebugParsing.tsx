@@ -1,13 +1,12 @@
-import { useEffect, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 import { dispatchBeginTraversal } from "../../events/BeginTraversalEvent"
 import { addEndTraversalListener } from "../../events/EndTraversalEvent"
-import Button from "./Button"
+import Button from "./presentation/Button"
 import JsonDownloadLink from "./JsonDownloadLink"
-import "./Panel.css"
 
 type Props = {}
 
-const Panel = ({}: Props) => {
+const DebugParsing: FC<Props> = (props) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const [inProgress, setInProgress] = useState(false)
 
@@ -23,12 +22,7 @@ const Panel = ({}: Props) => {
     }, [])
 
     return (
-        <div className="panel">
-            <div className="corner corner-top-left" />
-            <div className="corner corner-bottom-left" />
-            <div className="border border-top" />
-            <div className="border border-left" />
-            <div className="border border-bottom" />
+        <>
             {inProgress ? (
                 <p>In Progress</p>
             ) : (
@@ -38,7 +32,7 @@ const Panel = ({}: Props) => {
                             type="file"
                             name="input-file"
                             id="input-file"
-                            accept="application/zip"
+                            accept="application/zip,application/json"
                             ref={fileInputRef}
                         />
                     </div>
@@ -50,8 +44,8 @@ const Panel = ({}: Props) => {
             <div>
                 <JsonDownloadLink />
             </div>
-        </div>
+        </>
     )
 }
 
-export default Panel
+export default DebugParsing
