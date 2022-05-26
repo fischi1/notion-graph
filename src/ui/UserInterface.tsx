@@ -16,8 +16,7 @@ type RadioType = "enabled" | "disabled"
 const UserInterface = ({}: Props) => {
     const [checked, setChecked] = useState(false)
     const [radio, setRadio] = useState<RadioType>("enabled")
-
-    console.log(checked, radio)
+    const [file, setFile] = useState<File | null>(null)
 
     return (
         <Panel>
@@ -61,8 +60,17 @@ const UserInterface = ({}: Props) => {
                 </Radio>
             </div>
             <div style={{ margin: "1em" }}>
-                <FileInputButton id="test-file-input">
-                    Select a zip file
+                <FileInputButton
+                    accept="application/zip,application/json"
+                    onSelected={setFile}
+                >
+                    {file === null ? (
+                        "Select a zip file"
+                    ) : (
+                        <>
+                            Chosen file: <b>{file.name}</b>
+                        </>
+                    )}
                 </FileInputButton>
             </div>
             <DebugParsing />

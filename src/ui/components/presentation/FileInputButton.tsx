@@ -1,18 +1,16 @@
-import { ReactNode, useEffect, useRef } from "react"
+import { ChangeEvent, ReactNode, useEffect, useRef } from "react"
+import "./Button.css"
 import "./FileInputButton.css"
 
 type Props = {
-    id: string
+    accept?: string
+    onSelected?: (file: File) => void
     children: ReactNode
 }
 
-const FileInputButton = ({ id, children }: Props) => {
+const FileInputButton = ({ accept, onSelected, children }: Props) => {
     const labelRef = useRef<HTMLLabelElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
-
-    useEffect(() => {
-        labelRef.current?.focus()
-    }, [])
 
     useEffect(() => {
         const handleKeypress = (e: KeyboardEvent) => {
@@ -27,6 +25,14 @@ const FileInputButton = ({ id, children }: Props) => {
         }
     }, [])
 
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.item(0)
+
+        if (file && onSelected) {
+            onSelected(file)
+        }
+    }
+
     return (
         <label
             className="button file-input-button"
@@ -34,7 +40,12 @@ const FileInputButton = ({ id, children }: Props) => {
             role="button"
             ref={labelRef}
         >
-            <input type="file" ref={inputRef} />
+            <input
+                type="file"
+                accept={accept}
+                ref={inputRef}
+                onChange={handleChange}
+            />
             {children}
         </label>
     )

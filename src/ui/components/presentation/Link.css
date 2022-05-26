@@ -1,3 +1,8 @@
 .link {
     color: #ffbf00;
+
+    &:focus {
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(179, 134, 0, 0.4);
+    }
 }
