@@ -1,3 +1,7 @@
+html {
+    --ui-border-color: #b38600;
+}
+
 #ui {
     font-family: "Source Sans Pro";
     font-size: 1.2rem;

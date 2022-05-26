@@ -1,0 +1,35 @@
+.radio {
+    display: inline-block;
+    input {
+        width: 1.2em;
+        height: 1.2em;
+        margin-top: 0.12em;
+        background-color: white;
+        background-repeat: no-repeat;
+        background-position: center;
+        appearance: none;
+        vertical-align: top;
+        background-size: 75%;
+        border-radius: 50%;
+        border: 3px solid var(--ui-border-color);
+        position: relative;
+
+        &:checked:after {
+            content: "";
+            display: block;
+            background-color: black;
+            border-radius: 50%;
+            width: 0.5em;
+            height: 0.5em;
+            position: absolute;
+            top: 50%;
+            right: 50%;
+            transform: translate(50%, -48%);
+        }
+
+        &:focus {
+            outline: 0;
+            box-shadow: 0 0 0 0.25rem rgba(179, 134, 0, 0.4);
+        }
+    }
+}

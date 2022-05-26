@@ -6,7 +6,7 @@ import JsonDownloadLink from "./JsonDownloadLink"
 
 type Props = {}
 
-const DebugParsing: FC<Props> = (props) => {
+const DebugParsing: FC<Props> = () => {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const [inProgress, setInProgress] = useState(false)
 

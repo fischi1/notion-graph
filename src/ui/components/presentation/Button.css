@@ -5,17 +5,16 @@
 
     color: black;
     background-color: white;
-    border: 4px solid #b38600;
+    border: 4px solid var(--ui-border-color);
 
     &:hover:not(:disabled),
     &:active:not(:disabled) {
         color: white;
-        background-color: #b38600;
-        border: 4px solid #b38600;
+        background-color: var(--ui-border-color);
+        border: 4px solid var(--ui-border-color);
     }
 
     &:focus {
-        /* outline: 4px solid rgba(179, 134, 0, 0.4); */
         outline: 0;
         box-shadow: 0 0 0 0.25rem rgba(179, 134, 0, 0.4);
     }

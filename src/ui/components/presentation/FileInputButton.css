@@ -1,0 +1,6 @@
+.file-input-button {
+    padding: 1px 6px;
+    input {
+        display: none;
+    }
+}
