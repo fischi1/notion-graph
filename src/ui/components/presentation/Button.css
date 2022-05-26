@@ -1,0 +1,31 @@
+.button {
+    display: inline-block;
+    text-align: center;
+    white-space: nowrap;
+
+    color: black;
+    background-color: white;
+    border: 4px solid #b38600;
+
+    &:hover:not(:disabled),
+    &:active:not(:disabled) {
+        color: white;
+        background-color: #b38600;
+        border: 4px solid #b38600;
+    }
+
+    &:focus {
+        /* outline: 4px solid rgba(179, 134, 0, 0.4); */
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(179, 134, 0, 0.4);
+    }
+
+    &:disabled {
+        background-color: #aaaaaa;
+        border: 4px solid #4d4d4d;
+    }
+
+    &:not(:disabled) {
+        cursor: pointer;
+    }
+}
