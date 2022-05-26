@@ -1,0 +1,38 @@
+.range {
+    display: flex;
+    align-items: center;
+    /* gap: 0.7rem; */
+    input {
+        appearance: none;
+        width: 100%;
+        height: 0.35em;
+
+        &:focus {
+            outline: 0;
+            box-shadow: 0 0 0 0.25rem rgba(179, 134, 0, 0.4);
+        }
+
+        &::-webkit-slider-thumb {
+            appearance: none;
+            border-radius: 0;
+            height: 1.2em;
+            width: 1.2em;
+            background-color: #ffbf00;
+            border: 3px solid var(--ui-border-color);
+        }
+        &::-moz-range-thumb {
+            appearance: none;
+            border-radius: 0;
+            height: 0.9em;
+            width: 0.9em;
+            background-color: #ffbf00;
+            border: 3px solid var(--ui-border-color);
+        }
+    }
+    
+
+    span {
+        flex: 1 0 5ch;
+        text-align: right;
+    }
+}

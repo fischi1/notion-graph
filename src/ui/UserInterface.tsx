@@ -7,6 +7,7 @@ import Heading from "./components/presentation/Heading"
 import Link from "./components/presentation/Link"
 import Panel from "./components/presentation/Panel"
 import Radio from "./components/presentation/Radio"
+import Range from "./components/presentation/Range"
 import "./UserInterface.css"
 
 type Props = {}
@@ -17,6 +18,7 @@ const UserInterface = ({}: Props) => {
     const [checked, setChecked] = useState(false)
     const [radio, setRadio] = useState<RadioType>("enabled")
     const [file, setFile] = useState<File | null>(null)
+    const [range, setRange] = useState(50)
 
     return (
         <Panel>
@@ -73,6 +75,13 @@ const UserInterface = ({}: Props) => {
                     )}
                 </FileInputButton>
             </div>
+            <div style={{ margin: "1em" }}>
+                <Range value={range} onChange={setRange} />
+            </div>
+            <br />
+            <br />
+            <br />
+            <br />
             <DebugParsing />
         </Panel>
     )
