@@ -1,4 +1,5 @@
 .button {
+    all: unset;
     display: inline-block;
     text-align: center;
     white-space: nowrap;
@@ -6,6 +7,8 @@
     color: black;
     background-color: white;
     border: 4px solid var(--ui-border-color);
+
+    padding: 1px 6px;
 
     &:hover:not(:disabled),
     &:active:not(:disabled) {

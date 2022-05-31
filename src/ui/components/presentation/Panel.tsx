@@ -1,13 +1,16 @@
-import { ReactNode } from "react"
+import { CSSProperties, ReactNode } from "react"
 import "./Panel.css"
+import clsx from "clsx"
 
 type Props = {
+    style?: CSSProperties
+    className?: string
     children?: ReactNode
 }
 
-const Panel = ({ children }: Props) => {
+const Panel = ({ style, className, children }: Props) => {
     return (
-        <div className="panel">
+        <div className={clsx("panel", className)} style={style}>
             <div className="corner corner-top-left" />
             <div className="corner corner-bottom-left" />
             <div className="border border-top" />
