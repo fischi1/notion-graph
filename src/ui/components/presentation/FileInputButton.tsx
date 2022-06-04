@@ -15,7 +15,9 @@ const FileInputButton = ({ accept, onSelected, children }: Props) => {
     useEffect(() => {
         const handleKeypress = (e: KeyboardEvent) => {
             e.preventDefault()
-            if (e.key === " ") inputRef.current?.click()
+            if (e.key === " " || e.key === "Enter") {
+                inputRef.current?.click()
+            }
         }
 
         const label = labelRef.current
