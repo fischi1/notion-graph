@@ -3,33 +3,35 @@ import { useCallback, useEffect, useState } from "react"
 const useHashNav = (hashString: string) => {
     const [stringFound, setStringFound] = useState<
         "notFound" | "initial" | "afterHashChange"
-    >(() => (location.hash.includes(hashString) ? "initial" : "notFound"))
+    >(() =>
+        window.location.hash.includes(hashString) ? "initial" : "notFound"
+    )
 
     useEffect(() => {
         const handleHashChange = () => {
-            if (location.hash.includes(hashString)) {
+            if (window.location.hash.includes(hashString)) {
                 setStringFound("afterHashChange")
             } else {
                 setStringFound("notFound")
             }
         }
 
-        addEventListener("hashchange", handleHashChange)
+        window.addEventListener("hashchange", handleHashChange)
 
         return () => {
-            removeEventListener("hashchange", handleHashChange)
+            window.removeEventListener("hashchange", handleHashChange)
         }
-    }, [])
+    }, [hashString])
 
     const goBack = useCallback(() => {
         if (stringFound === "afterHashChange") {
-            history.back()
+            window.history.back()
         } else {
             //pushState() doesn't trigger hashchange, whereas back() does
-            history.pushState(
+            window.history.pushState(
                 "",
                 document.title,
-                location.pathname + location.search
+                window.location.pathname + window.location.search
             )
             setStringFound("notFound")
         }

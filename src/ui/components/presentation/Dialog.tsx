@@ -30,10 +30,12 @@ const Dialog = ({ open, onClose, children }: Props) => {
             onClose()
         }
 
-        dialogOverlayRef.current?.addEventListener("cancel", handleClose)
+        const dialogOverlay = dialogOverlayRef.current
+
+        dialogOverlay?.addEventListener("cancel", handleClose)
 
         return () => {
-            dialogOverlayRef.current?.removeEventListener("cancel", handleClose)
+            dialogOverlay?.removeEventListener("cancel", handleClose)
         }
     }, [onClose])
 

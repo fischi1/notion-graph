@@ -14,9 +14,7 @@ import "./UserInterface.css"
 
 type RadioType = "enabled" | "disabled"
 
-type Props = {}
-
-const UserInterface = ({}: Props) => {
+const UserInterface = () => {
     const [checked, setChecked] = useState(false)
     const [radio, setRadio] = useState<RadioType>("enabled")
     const [file, setFile] = useState<File | null>(null)

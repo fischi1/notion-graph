@@ -5,9 +5,7 @@ import {
     removeAddDoneParsingZipListener
 } from "../../events/DoneParsingZip"
 
-type Props = {}
-
-const JsonDownloadLink = ({}: Props) => {
+const JsonDownloadLink = () => {
     const [download, setDownload] = useState<{
         jsonDownloadUrl: string
         name: string

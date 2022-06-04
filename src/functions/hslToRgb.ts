@@ -14,7 +14,7 @@
 function hslToRgb(h: number, s: number, l: number) {
     var r, g, b
 
-    if (s == 0) {
+    if (s === 0) {
         r = g = b = l // achromatic
     } else {
         var hue2rgb = function hue2rgb(p: number, q: number, t: number) {

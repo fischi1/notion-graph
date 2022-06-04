@@ -1,5 +1,3 @@
-type EndTraversal = {}
-
 export type EndTraversalEvent = CustomEvent<void>
 
 const eventType = "endTraversal"

@@ -18,10 +18,12 @@ const FileInputButton = ({ accept, onSelected, children }: Props) => {
             if (e.key === " ") inputRef.current?.click()
         }
 
-        labelRef.current?.addEventListener("keyup", handleKeypress)
+        const label = labelRef.current
+
+        label?.addEventListener("keyup", handleKeypress)
 
         return () => {
-            labelRef.current?.removeEventListener("keyup", handleKeypress)
+            label?.removeEventListener("keyup", handleKeypress)
         }
     }, [])
 
