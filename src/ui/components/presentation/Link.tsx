@@ -3,12 +3,13 @@ import "./Link.css"
 
 type Props = {
     href?: string
+    target?: "_blank"
     children?: ReactNode
 }
 
-const Link = ({ href, children }: Props) => {
+const Link = ({ href, children, target }: Props) => {
     return (
-        <a href={href} className="link">
+        <a className="link" href={href} target={target}>
             {children}
         </a>
     )
