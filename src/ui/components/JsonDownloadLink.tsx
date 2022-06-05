@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
 import {
-    addDoneParsingZipListener,
-    DoneParsingZipEvent,
-    removeAddDoneParsingZipListener
-} from "../../events/DoneParsingZip"
+    addParsingZipDoneListener,
+    ParsingZipDoneEvent,
+    removeParsingZipDoneListener
+} from "../../events/ParsingZipDone"
 
 const JsonDownloadLink = () => {
     const [download, setDownload] = useState<{
@@ -12,7 +12,7 @@ const JsonDownloadLink = () => {
     } | null>(null)
 
     useEffect(() => {
-        const handleAddDoneParsing = (event: DoneParsingZipEvent) => {
+        const handleAddDoneParsing = (event: ParsingZipDoneEvent) => {
             const { file, root } = event.detail
             const blob = new Blob([JSON.stringify(root, null, 4)], {
                 type: "application/json"
@@ -24,9 +24,9 @@ const JsonDownloadLink = () => {
             })
         }
 
-        addDoneParsingZipListener(handleAddDoneParsing)
+        addParsingZipDoneListener(handleAddDoneParsing)
         return () => {
-            removeAddDoneParsingZipListener(handleAddDoneParsing)
+            removeParsingZipDoneListener(handleAddDoneParsing)
         }
     }, [])
 

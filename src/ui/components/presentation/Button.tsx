@@ -6,12 +6,20 @@ type Props = {
     onClick?: React.MouseEventHandler<HTMLButtonElement>
     disabled?: boolean
     className?: string
-    children?: ReactNode
+    children: ReactNode
+    type?: "button" | "submit"
 }
 
-const Button = ({ onClick, disabled, className, children }: Props) => {
+const Button = ({
+    onClick,
+    disabled,
+    className,
+    type = "button",
+    children
+}: Props) => {
     return (
         <button
+            type={type}
             className={clsx("button", className)}
             onClick={onClick}
             disabled={disabled}

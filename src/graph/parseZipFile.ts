@@ -1,5 +1,4 @@
 import JSZip from "jszip"
-import { dispatchDoneParsingZip } from "../events/DoneParsingZip"
 import idToUrl from "../functions/idToUrl"
 import { createEmptyPage, Page } from "../types/Page"
 
@@ -24,6 +23,7 @@ const parseZipFile = async (file: File) => {
     const rootPage = createEmptyPage()
 
     if (isWorkspaceExport) {
+        //TODO check link of the workspace node
         rootPage.id = "ffb0e8ae-b45e-40b6-925f-a453f9dd3f57"
         rootPage.title = "Workspace"
         rootPage.url = "https://notion.so"
@@ -39,7 +39,6 @@ const parseZipFile = async (file: File) => {
             text
         )
     }
-    dispatchDoneParsingZip({ file: file, root: rootPage })
     return rootPage
 }
 

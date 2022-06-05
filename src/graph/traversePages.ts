@@ -1,12 +1,10 @@
 import dispatchNewPageEvent from "../events/NewPageEvent"
 import { Page } from "../types/Page"
+import { TraversalType } from "../types/TraversalType"
 
 const sleepTime = 25
 
-const traversePages = async (
-    page: Page,
-    traversal: "breadth-first" | "depth-first"
-) => {
+const traversePages = async (page: Page, traversal: TraversalType) => {
     if (traversal === "depth-first") {
         await traverseDepthFirst(page)
     } else {

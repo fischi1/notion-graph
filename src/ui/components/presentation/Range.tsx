@@ -4,9 +4,11 @@ import "./Range.css"
 type Props = {
     value: number
     onChange?: (newValue: number) => void
+    min?: number
+    max?: number
 }
 
-const Range = ({ value, onChange }: Props) => {
+const Range = ({ value, onChange, min = 0, max = 500 }: Props) => {
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (onChange) {
             onChange(+e.target.value)
@@ -18,8 +20,8 @@ const Range = ({ value, onChange }: Props) => {
             <input
                 type="range"
                 value={value}
-                min={0}
-                max={500}
+                min={min}
+                max={max}
                 onChange={handleChange}
             />
             <span aria-hidden>{value}</span>
