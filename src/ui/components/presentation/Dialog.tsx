@@ -7,20 +7,21 @@ import Panel from "./Panel"
 type Props = {
     open: boolean
     onClose: () => void
+    title?: ReactNode
     children?: ReactNode
 }
 
-const Dialog = ({ open, onClose, children }: Props) => {
+const Dialog = ({ open, onClose, title, children }: Props) => {
     const dialogOverlayRef = useRef<HTMLDivElement>(null)
 
     useLayoutEffect(() => {
         if (open) {
             dialogOverlayRef.current?.removeAttribute("open")
             //@ts-expect-error
-            dialogOverlayRef.current.showModal()
+            dialogOverlayRef.current?.showModal()
         } else {
             //@ts-expect-error
-            dialogOverlayRef.current.close()
+            dialogOverlayRef.current?.close()
         }
     }, [open])
 
@@ -47,10 +48,10 @@ const Dialog = ({ open, onClose, children }: Props) => {
             aria-describedby="dialog-description"
         >
             <Panel className="dialog-panel">
-                <Heading id="dialog-title">Site Navigation</Heading>
+                <Heading id="dialog-title">{title}</Heading>
                 <div id="dialog-content">{children}</div>
                 <div className="close-dialog">
-                    <Button onClick={onClose}>Close Dialog</Button>
+                    <Button onClick={onClose}>Close</Button>
                 </div>
             </Panel>
         </dialog>

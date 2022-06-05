@@ -18,6 +18,7 @@
 
     .close-dialog {
         text-align: right;
+        margin-bottom: 5px;
     }
 
     &:not([open]) {

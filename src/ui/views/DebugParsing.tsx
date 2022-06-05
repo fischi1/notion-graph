@@ -1,8 +1,8 @@
 import { FC, useEffect, useRef, useState } from "react"
 import { dispatchBeginTraversal } from "../../events/BeginTraversalEvent"
 import { addEndTraversalListener } from "../../events/EndTraversalEvent"
-import Button from "./presentation/Button"
-import JsonDownloadLink from "./JsonDownloadLink"
+import Button from "../components/presentation/Button"
+import JsonDownloadLink from "../components/JsonDownloadLink"
 
 type Props = {}
 
