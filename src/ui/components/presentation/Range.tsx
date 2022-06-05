@@ -6,9 +6,18 @@ type Props = {
     onChange?: (newValue: number) => void
     min?: number
     max?: number
+    id?: string
+    ariaLabelledBy?: string
 }
 
-const Range = ({ value, onChange, min = 0, max = 500 }: Props) => {
+const Range = ({
+    value,
+    onChange,
+    min = 0,
+    max = 500,
+    id,
+    ariaLabelledBy
+}: Props) => {
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (onChange) {
             onChange(+e.target.value)
@@ -23,6 +32,8 @@ const Range = ({ value, onChange, min = 0, max = 500 }: Props) => {
                 min={min}
                 max={max}
                 onChange={handleChange}
+                id={id}
+                aria-labelledby={ariaLabelledBy}
             />
             <span aria-hidden>{value}</span>
         </div>

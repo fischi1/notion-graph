@@ -22,13 +22,16 @@ const SelectFile = () => {
             <br />
             <div>
                 <FileInputButton
-                    accept="application/zip,application/json"
+                    accept={
+                        import.meta.env.PROD
+                            ? "application/zip"
+                            : "application/zip,application/json"
+                    }
                     onSelected={handleFileChosen}
                 >
                     Choose file
                 </FileInputButton>
             </div>
-            <p>&nbsp;</p>
             <Dialog open={dialogOpen} onClose={back} title="Hello World">
                 TODO Content
             </Dialog>

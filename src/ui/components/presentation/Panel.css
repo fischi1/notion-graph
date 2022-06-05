@@ -5,9 +5,8 @@
     background-color: var(--color);
 
     margin: var(--angle-size);
-    padding: 0px;
-    padding-right: calc(var(--angle-size) + 5px);
-    padding-left: 5px;
+    padding: 0px calc(var(--angle-size) + 5px) 5px 5px;
+
     min-width: 25rem;
 
     .corner {

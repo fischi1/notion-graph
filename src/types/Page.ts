@@ -3,15 +3,13 @@ export type Page = {
     id: string
     url: string
     children: Page[]
-    references: string[]
 }
 
 const createEmptyPage = (): Page => ({
     title: "",
     id: "",
     url: "",
-    children: [],
-    references: []
+    children: []
 })
 
 export { createEmptyPage }
