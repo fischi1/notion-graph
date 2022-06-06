@@ -1,7 +1,10 @@
 import { dispatchParsingZipDone } from "../events/ParsingZipDone"
 import { addParsingZipStartListener } from "../events/ParsingZipStart"
+import { addTraversePagesListener } from "../events/TraversePagesEvent"
+import collapsePageTooManyChildren from "../functions/collapsePageTooManyChildren"
 import { Page } from "../types/Page"
 import parseZipFile from "./parseZipFile"
+import traversePages from "./traversePages"
 
 const initHandlers = () => {
     addParsingZipStartListener(async (event) => {
@@ -13,6 +16,15 @@ const initHandlers = () => {
             root = await parseZipFile(file)
         }
         dispatchParsingZipDone({ file, root })
+    })
+
+    addTraversePagesListener(async (event) => {
+        const { pages, traversalType, collapseThreshold, nodeAddDelay } =
+            event.detail
+
+        const clonedPages = structuredClone(pages)
+        collapsePageTooManyChildren(clonedPages, collapseThreshold)
+        traversePages(clonedPages, traversalType, nodeAddDelay)
     })
 }
 

@@ -9,7 +9,7 @@ import { dispatchParsingZipStart } from "../../events/ParsingZipStart"
 import { Page } from "../../types/Page"
 
 type State = {
-    step: "selectFile" | "parsingFile" | "options"
+    step: "selectFile" | "parsingFile" | "options" | "traversal"
     file: File | null
     pages: Page | null
 }
@@ -23,6 +23,9 @@ type Action =
           type: "parsingZipDone"
           root: Page
       }
+    | {
+          type: "optionsDone"
+      }
 
 const reducer = (state: State, action: Action): State => {
     switch (action.type) {
@@ -31,6 +34,8 @@ const reducer = (state: State, action: Action): State => {
             return { ...state, file: action.file, step: "parsingFile" }
         case "parsingZipDone":
             return { ...state, pages: action.root, step: "options" }
+        case "optionsDone":
+            return { ...state, step: "traversal" }
     }
 }
 

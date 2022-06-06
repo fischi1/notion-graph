@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react"
+import { dispatchTraversePages } from "../../events/TraversePagesEvent"
 import { TraversalType } from "../../types/TraversalType"
 import JsonDownloadLink from "../components/JsonDownloadLink"
 import PageCount from "../components/PageCount"
@@ -10,9 +11,12 @@ import Link from "../components/presentation/Link"
 import Panel from "../components/presentation/Panel"
 import Radio from "../components/presentation/Radio"
 import Range from "../components/presentation/Range"
+import { useStoreDispatch, useStoreState } from "../components/Store"
 import useHashNav from "../hooks/useHashNav"
 
 const Options = () => {
+    const state = useStoreState()
+    const dispatch = useStoreDispatch()
     const [traversalType, setTraversalType] =
         useState<TraversalType>("breadth-first")
     const [collapseThreshold, setCollapseThreshold] = useState(20)
@@ -22,6 +26,19 @@ const Options = () => {
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault()
+
+        if (!state.pages) {
+            console.log("state.pages is null")
+            return
+        }
+
+        dispatchTraversePages({
+            pages: state.pages,
+            traversalType: traversalType,
+            collapseThreshold: collapseThreshold,
+            nodeAddDelay: delay
+        })
+        dispatch({ type: "optionsDone" })
     }
 
     return (
@@ -65,7 +82,7 @@ const Options = () => {
                         htmlFor="collapse-range-input"
                     >
                         Collapse pages with more than <b>{collapseThreshold}</b>
-                        &nbsp;pages
+                        &nbsp;children
                     </label>
                     <Link href="#collapse-help-modal">
                         What is this setting for?

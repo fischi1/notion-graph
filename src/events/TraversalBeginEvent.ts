@@ -1,4 +1,6 @@
-type TraversalBegin = {}
+type TraversalBegin = {
+    pageCount: number
+}
 
 export type TraversalBeginEvent = CustomEvent<TraversalBegin>
 

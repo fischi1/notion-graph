@@ -1,20 +1,29 @@
 import dispatchNewPageEvent from "../events/NewPageEvent"
+import { dispatchTraversalBegin } from "../events/TraversalBeginEvent"
+import { dispatchTraversalEnd } from "../events/TraversalEndEvent"
+import countPages from "../functions/countPages"
 import { Page } from "../types/Page"
 import { TraversalType } from "../types/TraversalType"
 
-const sleepTime = 25
-
-const traversePages = async (page: Page, traversal: TraversalType) => {
+const traversePages = async (
+    page: Page,
+    traversal: TraversalType,
+    sleepTime: number
+) => {
+    dispatchTraversalBegin({
+        pageCount: countPages(page)
+    })
     if (traversal === "depth-first") {
-        await traverseDepthFirst(page)
+        await traverseDepthFirst(page, sleepTime)
     } else {
-        await traverseBreadthFirst(page)
+        await traverseBreadthFirst(page, sleepTime)
     }
+    dispatchTraversalEnd()
 }
 
 type QueueItem = { page: Page; depth: number; parentId?: string }
 
-const traverseBreadthFirst = async (root: Page) => {
+const traverseBreadthFirst = async (root: Page, sleepTime: number) => {
     const queue: QueueItem[] = []
     queue.push({ page: root, depth: 0 })
 
@@ -40,7 +49,7 @@ const traverseBreadthFirst = async (root: Page) => {
     }
 }
 
-const traverseDepthFirst = async (page: Page) => {
+const traverseDepthFirst = async (page: Page, sleepTime: number) => {
     const processPage = async (
         page: Page,
         depth: number,
