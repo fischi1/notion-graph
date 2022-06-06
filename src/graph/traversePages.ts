@@ -1,4 +1,4 @@
-import dispatchNewPageEvent from "../events/NewPageEvent"
+import { dispatchNewPage } from "../events/NewPageEvent"
 import { dispatchTraversalBegin } from "../events/TraversalBeginEvent"
 import { dispatchTraversalEnd } from "../events/TraversalEndEvent"
 import countPages from "../functions/countPages"
@@ -31,7 +31,7 @@ const traverseBreadthFirst = async (root: Page, sleepTime: number) => {
         const queueItem = queue.shift()
         if (!queueItem) return
 
-        dispatchNewPageEvent({
+        dispatchNewPage({
             title: queueItem.page.title,
             id: queueItem.page.id,
             url: queueItem.page.url,
@@ -55,7 +55,7 @@ const traverseDepthFirst = async (page: Page, sleepTime: number) => {
         depth: number,
         parentPage?: Page
     ) => {
-        dispatchNewPageEvent({
+        dispatchNewPage({
             title: page.title,
             id: page.id,
             url: page.url,

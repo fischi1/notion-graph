@@ -2,7 +2,7 @@ import * as d3 from "d3"
 import { SimulationLinkDatum, SimulationNodeDatum } from "d3"
 import { addTraversalBeginListener } from "../events/TraversalBeginEvent"
 import { addTraversalEndListener } from "../events/TraversalEndEvent"
-import { NewPageEvent } from "../events/NewPageEvent"
+import { addNewPageListener, NewPageEvent } from "../events/NewPageEvent"
 import exportGraphAsImage from "../functions/exportGraphAsImage"
 import hslToRgb from "../functions/hslToRgb"
 import "./graph.css"
@@ -335,7 +335,7 @@ const initGraph = () => {
     restart()
     recreateLabels()
 
-    const handleNewPage = (event: NewPageEvent) => {
+    addNewPageListener((event: NewPageEvent) => {
         const detail = event.detail
 
         let x = 0
@@ -366,7 +366,7 @@ const initGraph = () => {
         }
 
         restart(true)
-    }
+    })
 
     addTraversalBeginListener(() => {
         // clear the graph
@@ -382,8 +382,6 @@ const initGraph = () => {
     addTraversalEndListener(() => {
         storeInLocalStorage()
     })
-
-    document.addEventListener("newPage", handleNewPage as any)
 
     function storeInLocalStorage() {
         const copiedLinks = (structuredClone(links) as PageLink[]).map(

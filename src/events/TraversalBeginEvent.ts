@@ -16,4 +16,14 @@ const addTraversalBeginListener = (
     document.addEventListener(eventType, onTraversalBegin as any)
 }
 
-export { dispatchTraversalBegin, addTraversalBeginListener }
+const removeTraversalBeginListener = (
+    onTraversalBegin: (event: TraversalBeginEvent) => void
+) => {
+    document.removeEventListener(eventType, onTraversalBegin as any)
+}
+
+export {
+    dispatchTraversalBegin,
+    addTraversalBeginListener,
+    removeTraversalBeginListener
+}

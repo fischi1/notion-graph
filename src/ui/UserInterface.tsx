@@ -1,6 +1,6 @@
 import Store from "./components/Store"
-import Listeners from "./Listeners"
-import Routing from "./Routing"
+import Listeners from "./components/Listeners"
+import Routing from "./components/Routing"
 
 const UserInterface = () => {
     return (

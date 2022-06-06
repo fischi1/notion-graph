@@ -12,4 +12,14 @@ const addTraversalEndListener = (
     document.addEventListener(eventType, onTraversalEnd as any)
 }
 
-export { dispatchTraversalEnd, addTraversalEndListener }
+const removeTraversalEndListener = (
+    onTraversalEnd: (event: TraversalEndEvent) => void
+) => {
+    document.removeEventListener(eventType, onTraversalEnd as any)
+}
+
+export {
+    dispatchTraversalEnd,
+    addTraversalEndListener,
+    removeTraversalEndListener
+}

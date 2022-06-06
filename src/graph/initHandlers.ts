@@ -1,5 +1,5 @@
-import { dispatchParsingZipDone } from "../events/ParsingZipDone"
-import { addParsingZipStartListener } from "../events/ParsingZipStart"
+import { dispatchParsingZipDone } from "../events/ParsingZipDoneEvent"
+import { addParsingZipStartListener } from "../events/ParsingZipStartEvent"
 import { addTraversePagesListener } from "../events/TraversePagesEvent"
 import collapsePageTooManyChildren from "../functions/collapsePageTooManyChildren"
 import { Page } from "../types/Page"

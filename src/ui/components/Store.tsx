@@ -5,13 +5,20 @@ import {
     useContext,
     useReducer
 } from "react"
-import { dispatchParsingZipStart } from "../../events/ParsingZipStart"
+import { dispatchParsingZipStart } from "../../events/ParsingZipStartEvent"
 import { Page } from "../../types/Page"
 
 type State = {
-    step: "selectFile" | "parsingFile" | "options" | "traversal"
+    step:
+        | "selectFile"
+        | "parsingFile"
+        | "options"
+        | "traversal"
+        | "graphControl"
     file: File | null
     pages: Page | null
+    pageCount: number
+    pagesGenerated: number
 }
 
 type Action =
@@ -26,6 +33,16 @@ type Action =
     | {
           type: "optionsDone"
       }
+    | {
+          type: "setPageCount"
+          pageCount: number
+      }
+    | {
+          type: "newPageEventTriggered"
+      }
+    | {
+          type: "travesalEnded"
+      }
 
 const reducer = (state: State, action: Action): State => {
     switch (action.type) {
@@ -36,13 +53,24 @@ const reducer = (state: State, action: Action): State => {
             return { ...state, pages: action.root, step: "options" }
         case "optionsDone":
             return { ...state, step: "traversal" }
+        case "setPageCount":
+            return { ...state, pageCount: action.pageCount, pagesGenerated: 0 }
+        case "newPageEventTriggered":
+            return {
+                ...state,
+                pagesGenerated: state.pagesGenerated + 1
+            }
+        case "travesalEnded":
+            return { ...state, step: "graphControl" }
     }
 }
 
 const initalState: State = {
     step: "selectFile",
     file: null,
-    pages: null
+    pages: null,
+    pageCount: 0,
+    pagesGenerated: 0
 }
 
 const StateContext = createContext(initalState)
