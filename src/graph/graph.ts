@@ -1,7 +1,7 @@
 import * as d3 from "d3"
 import { SimulationLinkDatum, SimulationNodeDatum } from "d3"
-import { addBeginTraversalListener } from "../events/BeginTraversalEvent"
-import { addEndTraversalListener } from "../events/EndTraversalEvent"
+import { addTraversalBeginListener } from "../events/TraversalBeginEvent"
+import { addTraversalEndListener } from "../events/TraversalEndEvent"
 import { NewPageEvent } from "../events/NewPageEvent"
 import exportGraphAsImage from "../functions/exportGraphAsImage"
 import hslToRgb from "../functions/hslToRgb"
@@ -368,7 +368,7 @@ const initGraph = () => {
         restart(true)
     }
 
-    addBeginTraversalListener(() => {
+    addTraversalBeginListener(() => {
         // clear the graph
         nodes.length = 0
         links.length = 0
@@ -379,7 +379,7 @@ const initGraph = () => {
         zoom.scaleTo(svg, 1)
     })
 
-    addEndTraversalListener(() => {
+    addTraversalEndListener(() => {
         storeInLocalStorage()
     })
 

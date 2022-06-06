@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react"
 import { TraversalType } from "../../types/TraversalType"
+import JsonDownloadLink from "../components/JsonDownloadLink"
 import PageCount from "../components/PageCount"
 import PageCountAfterCollapse from "../components/PageCountAfterCollapse"
 import Button from "../components/presentation/Button"
@@ -21,7 +22,6 @@ const Options = () => {
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault()
-        console.log("submit", e)
     }
 
     return (
@@ -105,6 +105,7 @@ const Options = () => {
             <Dialog open={open} onClose={back} title="Collapsing pages">
                 TODO content, screenshot...
             </Dialog>
+            {import.meta.env.DEV && <JsonDownloadLink />}
         </Panel>
     )
 }

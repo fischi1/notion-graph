@@ -1,41 +1,34 @@
-import { useEffect, useState } from "react"
-import {
-    addParsingZipDoneListener,
-    ParsingZipDoneEvent,
-    removeParsingZipDoneListener
-} from "../../events/ParsingZipDone"
+import { useMemo } from "react"
+import Link from "./presentation/Link"
+import { useStoreState } from "./Store"
 
 const JsonDownloadLink = () => {
-    const [download, setDownload] = useState<{
-        jsonDownloadUrl: string
-        name: string
-    } | null>(null)
+    const state = useStoreState()
 
-    useEffect(() => {
-        const handleAddDoneParsing = (event: ParsingZipDoneEvent) => {
-            const { file, root } = event.detail
-            const blob = new Blob([JSON.stringify(root, null, 4)], {
-                type: "application/json"
-            })
+    const download = useMemo(() => {
+        const file = state.file
+        const pages = state.pages
 
-            setDownload({
-                jsonDownloadUrl: window.URL.createObjectURL(blob),
-                name: file.name.substring(0, file.name.length - 3) + "json"
-            })
+        if (!pages || !file) {
+            return null
         }
 
-        addParsingZipDoneListener(handleAddDoneParsing)
-        return () => {
-            removeParsingZipDoneListener(handleAddDoneParsing)
+        const blob = new Blob([JSON.stringify(pages, null, 4)], {
+            type: "application/json"
+        })
+
+        return {
+            jsonDownloadUrl: window.URL.createObjectURL(blob),
+            name: file.name.substring(0, file.name.length - 3) + "json"
         }
-    }, [])
+    }, [state.file, state.pages])
 
     if (!download) return <>Nothing parsed</>
     else {
         return (
-            <a href={download.jsonDownloadUrl} download={download.name}>
+            <Link href={download.jsonDownloadUrl} download={download.name}>
                 {download.name}
-            </a>
+            </Link>
         )
     }
 }
