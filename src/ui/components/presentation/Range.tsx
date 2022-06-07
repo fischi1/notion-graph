@@ -6,6 +6,7 @@ type Props = {
     onChange?: (newValue: number) => void
     min?: number
     max?: number
+    step?: number
     id?: string
     ariaLabelledBy?: string
 }
@@ -15,6 +16,7 @@ const Range = ({
     onChange,
     min = 0,
     max = 500,
+    step,
     id,
     ariaLabelledBy
 }: Props) => {
@@ -31,6 +33,7 @@ const Range = ({
                 value={value}
                 min={min}
                 max={max}
+                step={step}
                 onChange={handleChange}
                 id={id}
                 aria-labelledby={ariaLabelledBy}
