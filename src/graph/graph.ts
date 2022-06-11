@@ -1,8 +1,10 @@
 import * as d3 from "d3"
 import { SimulationLinkDatum, SimulationNodeDatum } from "d3"
+import { addNewPageListener, NewPageEvent } from "../events/NewPageEvent"
+import { addOptionsChangeListener } from "../events/OptionsChangeEvent"
+import { addResetViewListener } from "../events/ResetViewEvent"
 import { addTraversalBeginListener } from "../events/TraversalBeginEvent"
 import { addTraversalEndListener } from "../events/TraversalEndEvent"
-import { addNewPageListener, NewPageEvent } from "../events/NewPageEvent"
 import exportGraphAsImage from "../functions/exportGraphAsImage"
 import hslToRgb from "../functions/hslToRgb"
 import "./graph.css"
@@ -44,6 +46,10 @@ const hoverLabels: PageNode[] = []
 
 //@ts-ignore
 window.hoverLabels = hoverLabels
+
+const options = {
+    labelsEnabled: true
+}
 
 const getNodeColor = (node: PageNode) => {
     const hue = node.depth * hueShiftPerNode
@@ -301,7 +307,8 @@ const initGraph = () => {
         textElements.exit().remove()
         textElements = drawLabel(textElements.enter())
             .attr("id", (node: PageNode) => `label-${node.id}`)
-            .merge(textElements)
+            .merge(textElements) // update selection
+            .attr("fill", options.labelsEnabled ? "white" : "transparent")
 
         // Update and restart the simulation.
         simulation.nodes(nodes)
@@ -322,7 +329,6 @@ const initGraph = () => {
                 "transform",
                 (node: PageNode) => `translate(${node.x}, ${node.y})`
             )
-
             .merge(hoverLabelElements)
 
         hoverLabelElements.call(drawLabelTag)
@@ -334,6 +340,11 @@ const initGraph = () => {
 
     restart()
     recreateLabels()
+
+    function resetView() {
+        zoom.translateTo(svg, 0, 0)
+        zoom.scaleTo(svg, 1)
+    }
 
     addNewPageListener((event: NewPageEvent) => {
         const detail = event.detail
@@ -375,12 +386,24 @@ const initGraph = () => {
         hoverLabels.length = 0
         restart()
         recreateLabels()
-        zoom.translateTo(svg, 0, 0)
-        zoom.scaleTo(svg, 1)
+        resetView()
     })
 
     addTraversalEndListener(() => {
         storeInLocalStorage()
+    })
+
+    addResetViewListener(() => {
+        resetView()
+    })
+
+    addOptionsChangeListener((event) => {
+        const { labelsEnabled } = event.detail
+
+        if (labelsEnabled !== undefined) {
+            options.labelsEnabled = labelsEnabled
+            restart()
+        }
     })
 
     function storeInLocalStorage() {
