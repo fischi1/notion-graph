@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from "react"
+import { dispatchGenerateImage } from "../../events/GenerateImageEvent"
 import { dispatchOptionsChange } from "../../events/OptionsChangeEvent"
 import { dispatchResetView } from "../../events/ResetViewEvent"
 import Button from "../components/presentation/Button"
@@ -13,7 +14,7 @@ const GraphControl = () => {
 
     const handleScreenshotSubmit = (e: FormEvent) => {
         e.preventDefault()
-        console.log(screenshotScale)
+        dispatchGenerateImage({ scale: screenshotScale })
     }
 
     const handleResetButton = () => {

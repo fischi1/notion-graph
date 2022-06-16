@@ -1,5 +1,6 @@
 import * as d3 from "d3"
 import { SimulationLinkDatum, SimulationNodeDatum } from "d3"
+import { addGenerateImageListener } from "../events/GenerateImageEvent"
 import { addNewPageListener, NewPageEvent } from "../events/NewPageEvent"
 import { addOptionsChangeListener } from "../events/OptionsChangeEvent"
 import { addResetViewListener } from "../events/ResetViewEvent"
@@ -406,6 +407,17 @@ const initGraph = () => {
         }
     })
 
+    addGenerateImageListener((event) => {
+        const scale = event.detail.scale
+
+        exportGraphAsImage(
+            svg.node() as HTMLOrSVGImageElement,
+            nodes,
+            scale,
+            25
+        )
+    })
+
     function storeInLocalStorage() {
         const copiedLinks = (structuredClone(links) as PageLink[]).map(
             (link) => {
@@ -422,16 +434,6 @@ const initGraph = () => {
             alpha: simulation.alpha()
         }
         localStorage.setItem("stored-graph", JSON.stringify(graphToStore))
-    }
-
-    //@ts-expect-error
-    window.exportAsImage = (multiplier: number) => {
-        exportGraphAsImage(
-            svg.node() as HTMLOrSVGImageElement,
-            nodes,
-            multiplier,
-            25
-        )
     }
 }
 

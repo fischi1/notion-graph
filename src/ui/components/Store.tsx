@@ -66,7 +66,7 @@ const reducer = (state: State, action: Action): State => {
 }
 
 const initalState: State = {
-    step: "graphControl",
+    step: "selectFile",
     file: null,
     pages: null,
     pageCount: 0,
