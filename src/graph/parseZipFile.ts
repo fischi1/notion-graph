@@ -2,6 +2,9 @@ import JSZip from "jszip"
 import idToUrl from "../functions/idToUrl"
 import { createEmptyPage, Page } from "../types/Page"
 
+const fixedId = "ffb0e8ae-b45e-40b6-925f-a453f9dd3f57"
+const fixedIdAlternate = fixedId.replaceAll("-", "")
+
 const parseZipFile = async (file: File) => {
     const zip = await JSZip.loadAsync(file)
 
@@ -23,8 +26,8 @@ const parseZipFile = async (file: File) => {
     const rootPage = createEmptyPage()
 
     if (isWorkspaceExport) {
-        //TODO check link of the workspace node
-        rootPage.id = "ffb0e8ae-b45e-40b6-925f-a453f9dd3f57"
+        //Notion opens the last visited page if the id doesn't exist
+        rootPage.id = fixedId
         rootPage.title = "Workspace"
         rootPage.url = "https://notion.so"
     }
@@ -34,7 +37,8 @@ const parseZipFile = async (file: File) => {
         if (absoluteFilePath.endsWith(".html"))
             text = (await zip.file(absoluteFilePath)?.async("text")) ?? ""
         await addFileToPages(
-            (isWorkspaceExport ? "Workspace ffb0e/" : "") + absoluteFilePath,
+            (isWorkspaceExport ? `Workspace ${fixedIdAlternate}/` : "") +
+                absoluteFilePath,
             rootPage,
             text
         )
