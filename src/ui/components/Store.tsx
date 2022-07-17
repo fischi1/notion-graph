@@ -43,6 +43,9 @@ type Action =
     | {
           type: "travesalEnded"
       }
+    | {
+          type: "restartWizard"
+      }
 
 const reducer = (state: State, action: Action): State => {
     switch (action.type) {
@@ -62,6 +65,8 @@ const reducer = (state: State, action: Action): State => {
             }
         case "travesalEnded":
             return { ...state, step: "graphControl" }
+        case "restartWizard":
+            return initalState
     }
 }
 
@@ -73,6 +78,13 @@ const initalState: State = {
     pagesGenerated: 0
 }
 
+const initializer = (): State => {
+    if ("stored-graph" in localStorage) {
+        return { ...initalState, step: "graphControl" }
+    }
+    return initalState
+}
+
 const StateContext = createContext(initalState)
 const DispatchContext = createContext<Dispatch<Action> | null>(null)
 
@@ -81,7 +93,7 @@ type Props = {
 }
 
 const Store = ({ children }: Props) => {
-    const [state, dispatch] = useReducer(reducer, initalState)
+    const [state, dispatch] = useReducer(reducer, initalState, initializer)
 
     return (
         <DispatchContext.Provider value={dispatch}>

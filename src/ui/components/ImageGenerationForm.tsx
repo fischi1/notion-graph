@@ -48,7 +48,11 @@ const ImageGenerationForm = () => {
 
     return (
         <form
-            style={{ paddingTop: "1.3rem" }}
+            style={{
+                marginTop: "1.3rem",
+                padding: "0.3rem 0.5rem 0.5rem 0.5rem",
+                border: "1px solid grey"
+            }}
             onSubmit={handleScreenshotSubmit}
         >
             <p>Export as image</p>

@@ -6,12 +6,18 @@ import Button from "../components/presentation/Button"
 import Checkbox from "../components/presentation/Checkbox"
 import Heading from "../components/presentation/Heading"
 import Panel from "../components/presentation/Panel"
+import { useStoreDispatch } from "../components/Store"
 
 const GraphControl = () => {
+    const dispatch = useStoreDispatch()
     const [labelsEnabled, setLabelsEnabled] = useState(true)
 
     const handleResetButton = () => {
         dispatchResetView()
+    }
+
+    const handleRestartButton = () => {
+        dispatch({ type: "restartWizard" })
     }
 
     useEffect(() => {
@@ -34,6 +40,11 @@ const GraphControl = () => {
                 </Checkbox>
             </div>
             <ImageGenerationForm />
+            <div style={{ paddingTop: "1.5rem" }}>
+                <Button onClick={handleRestartButton}>
+                    Import another workspace
+                </Button>
+            </div>
         </Panel>
     )
 }
