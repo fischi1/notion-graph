@@ -40,6 +40,13 @@ const downloadSvgAsPng = (
                 .toDataURL("image/png")
                 .replace("image/png", "image/octet-stream")
 
+            console.log("imgURI.length", imgURI.length)
+
+            if (imgURI.length <= 6) {
+                reject("resultImageTooBig")
+                return
+            }
+
             const a = document.createElement("a")
             a.setAttribute("download", filename)
             a.setAttribute("href", imgURI)

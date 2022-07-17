@@ -8,6 +8,7 @@ type Props = {
     max?: number
     step?: number
     id?: string
+    disabled?: boolean
     ariaLabelledBy?: string
 }
 
@@ -18,6 +19,7 @@ const Range = ({
     max = 500,
     step,
     id,
+    disabled,
     ariaLabelledBy
 }: Props) => {
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -36,6 +38,7 @@ const Range = ({
                 step={step}
                 onChange={handleChange}
                 id={id}
+                disabled={disabled}
                 aria-labelledby={ariaLabelledBy}
             />
             <span aria-hidden>{value}</span>

@@ -1,11 +1,12 @@
 .range {
     display: flex;
     align-items: center;
-    /* gap: 0.7rem; */
+
     input {
         appearance: none;
         width: 100%;
         height: 0.35em;
+        background-color: white;
 
         &:focus {
             outline: 0;
@@ -20,6 +21,7 @@
             background-color: #ffbf00;
             border: 3px solid var(--ui-border-color);
         }
+
         &::-moz-range-thumb {
             appearance: none;
             border-radius: 0;
@@ -28,8 +30,20 @@
             background-color: #ffbf00;
             border: 3px solid var(--ui-border-color);
         }
+
+        &:disabled {
+            background-color: #aaaaaa;
+
+            &::-webkit-slider-thumb {
+                background-color: #aaaaaa;
+                border: 3px solid #4d4d4d;
+            }
+            &::-moz-range-thumb {
+                background-color: #aaaaaa;
+                border: 3px solid #4d4d4d;
+            }
+        }
     }
-    
 
     span {
         flex: 1 0 5ch;

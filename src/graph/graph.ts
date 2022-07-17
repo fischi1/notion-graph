@@ -1,5 +1,6 @@
 import * as d3 from "d3"
 import { SimulationLinkDatum, SimulationNodeDatum } from "d3"
+import { dispatchGenerateImageDone } from "../events/GenerateImageDoneEvent"
 import { addGenerateImageListener } from "../events/GenerateImageEvent"
 import { addNewPageListener, NewPageEvent } from "../events/NewPageEvent"
 import { addOptionsChangeListener } from "../events/OptionsChangeEvent"
@@ -407,15 +408,22 @@ const initGraph = () => {
         }
     })
 
-    addGenerateImageListener((event) => {
+    addGenerateImageListener(async (event) => {
         const scale = event.detail.scale
 
-        exportGraphAsImage(
-            svg.node() as HTMLOrSVGImageElement,
-            nodes,
-            scale,
-            25
-        )
+        try {
+            await exportGraphAsImage(
+                svg.node() as HTMLOrSVGImageElement,
+                nodes,
+                scale,
+                25
+            )
+            dispatchGenerateImageDone({})
+        } catch (error) {
+            if (error === "resultImageTooBig") {
+                dispatchGenerateImageDone({ error: "imageScaleTooBig" })
+            }
+        }
     })
 
     function storeInLocalStorage() {
