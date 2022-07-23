@@ -1,0 +1,17 @@
+.select-file-dialog-content {
+    p {
+        margin-bottom: 1.7rem;
+        margin-top: 0.4rem;
+    }
+
+    ol {
+        padding-inline-start: 18px;
+        padding-right: 1rem;
+        margin-bottom: 1.7rem;
+    }
+
+    h2,
+    li {
+        margin-bottom: 0.3rem;
+    }
+}

@@ -1,3 +1,9 @@
 .heading {
-    font-size: 1.2em;
+    &.h1 {
+        font-size: 1.2em;
+    }
+
+    &.h2 {
+        font-size: 1.1em;
+    }
 }

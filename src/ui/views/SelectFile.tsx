@@ -3,6 +3,7 @@ import FileInputButton from "../components/presentation/FileInputButton"
 import Heading from "../components/presentation/Heading"
 import Link from "../components/presentation/Link"
 import Panel from "../components/presentation/Panel"
+import SelectFileDialogContent from "../components/dialogContent/SelectFileDialogContent"
 import { useStoreDispatch } from "../components/Store"
 import useHashNav from "../hooks/useHashNav"
 
@@ -32,8 +33,12 @@ const SelectFile = () => {
                     Choose file
                 </FileInputButton>
             </div>
-            <Dialog open={dialogOpen} onClose={back} title="Hello World">
-                TODO Content
+            <Dialog
+                open={dialogOpen}
+                onClose={back}
+                title="Where can I get this file from?"
+            >
+                <SelectFileDialogContent />
             </Dialog>
         </Panel>
     )

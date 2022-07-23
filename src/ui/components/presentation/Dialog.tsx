@@ -12,15 +12,13 @@ type Props = {
 }
 
 const Dialog = ({ open, onClose, title, children }: Props) => {
-    const dialogOverlayRef = useRef<HTMLDivElement>(null)
+    const dialogOverlayRef = useRef<HTMLDialogElement>(null)
 
     useLayoutEffect(() => {
         if (open) {
             dialogOverlayRef.current?.removeAttribute("open")
-            //@ts-expect-error
             dialogOverlayRef.current?.showModal()
         } else {
-            //@ts-expect-error
             dialogOverlayRef.current?.close()
         }
     }, [open])
@@ -34,6 +32,9 @@ const Dialog = ({ open, onClose, title, children }: Props) => {
         const dialogOverlay = dialogOverlayRef.current
 
         dialogOverlay?.addEventListener("cancel", handleClose)
+        if (dialogOverlay?.scrollTop) {
+            dialogOverlay.scrollTop = 0
+        }
 
         return () => {
             dialogOverlay?.removeEventListener("cancel", handleClose)
@@ -47,13 +48,15 @@ const Dialog = ({ open, onClose, title, children }: Props) => {
             aria-labelledby="dialog-title"
             aria-describedby="dialog-description"
         >
-            <Panel className="dialog-panel">
-                <Heading id="dialog-title">{title}</Heading>
-                <div id="dialog-content">{children}</div>
-                <div className="close-dialog">
-                    <Button onClick={onClose}>Close</Button>
-                </div>
-            </Panel>
+            <div className="dialog-panel">
+                <Panel>
+                    <Heading id="dialog-title">{title}</Heading>
+                    <div id="dialog-content">{children}</div>
+                    <div className="close-dialog">
+                        <Button onClick={onClose}>Close</Button>
+                    </div>
+                </Panel>
+            </div>
         </dialog>
     )
 }
