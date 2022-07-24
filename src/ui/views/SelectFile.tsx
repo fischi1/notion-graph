@@ -36,7 +36,7 @@ const SelectFile = () => {
             <Dialog
                 open={dialogOpen}
                 onClose={back}
-                title="Where can I get this file from?"
+                title="Exporting Notion content"
             >
                 <SelectFileDialogContent />
             </Dialog>

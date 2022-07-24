@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react"
 import { dispatchTraversePages } from "../../events/TraversePagesEvent"
 import { TraversalType } from "../../types/TraversalType"
+import CollapsingPagesDialogContent from "../components/dialogContent/CollapsingPagesDialogContent"
 import JsonDownloadLink from "../components/JsonDownloadLink"
 import PageCount from "../components/PageCount"
 import PageCountAfterCollapse from "../components/PageCountAfterCollapse"
@@ -120,7 +121,7 @@ const Options = () => {
                 </div>
             </form>
             <Dialog open={open} onClose={back} title="Collapsing pages">
-                TODO content, screenshot...
+                <CollapsingPagesDialogContent />
             </Dialog>
             {import.meta.env.DEV && <JsonDownloadLink />}
         </Panel>

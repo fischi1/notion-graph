@@ -1,12 +1,12 @@
 import Heading from "../presentation/Heading"
 import Image from "../presentation/Image"
+import DialogContent from "./DialogContent"
 import A01_settingsMembers from "./images/A01_settingsMembers.png"
 import A02_settings from "./images/A02_settings.png"
 import A03_exportOptions from "./images/A03_exportOptions.png"
 import A04_chooseFile from "./images/A04_chooseFile.png"
 import B01_pageMenu from "./images/B01_pageMenu.png"
 import B02_exportOptions from "./images/B02_exportOptions.png"
-import "./SelectFileDialogContent.css"
 
 const SelectFileDialogContent = () => {
     const finalListItem = (
@@ -16,7 +16,7 @@ const SelectFileDialogContent = () => {
             <br />
             <Image
                 src={A04_chooseFile}
-                alt="TODO"
+                alt="File selection window of this tool"
                 width={429}
                 maxWidth={360}
                 height={180}
@@ -26,7 +26,7 @@ const SelectFileDialogContent = () => {
     )
 
     return (
-        <div className="select-file-dialog-content">
+        <DialogContent>
             <p>
                 This tool needs an export from your Notion workspace to generate
                 a graph. You can choose whether you want to use your whole
@@ -39,7 +39,7 @@ const SelectFileDialogContent = () => {
                     <br />
                     <Image
                         src={A01_settingsMembers}
-                        alt="TODO"
+                        alt={`Notion's side bar, mouse hovers over "Settings & Members`}
                         width={265}
                         height={145}
                     />
@@ -50,7 +50,7 @@ const SelectFileDialogContent = () => {
                     <br />
                     <Image
                         src={A02_settings}
-                        alt="TODO"
+                        alt={`Notion's settings menu, selected tab: "Settings", mouse hovers over the button "Export all workspace content"`}
                         width={521}
                         height={349}
                         responsive
@@ -81,7 +81,7 @@ const SelectFileDialogContent = () => {
                     <br />
                     <Image
                         src={B01_pageMenu}
-                        alt="TODO"
+                        alt={`Context menu of a Notion page opened, mouse hovers over "Export"`}
                         width={241}
                         height={242}
                     />
@@ -101,7 +101,7 @@ const SelectFileDialogContent = () => {
                 </li>
                 {finalListItem}
             </ol>
-        </div>
+        </DialogContent>
     )
 }
 
