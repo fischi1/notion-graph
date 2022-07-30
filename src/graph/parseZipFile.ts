@@ -9,19 +9,13 @@ const parseZipFile = async (file: File) => {
     const zip = await JSZip.loadAsync(file)
 
     const filePaths = Object.keys(zip.files)
-    let foundFirstSubpage = false
-    let firstSubpage = 0
-    for (
-        firstSubpage = 0;
-        firstSubpage < filePaths.length && !foundFirstSubpage;
-        firstSubpage++
-    ) {
-        const path = filePaths[firstSubpage]
-        if (path.split("/").length > 1) {
-            foundFirstSubpage = true
-        }
-    }
-    const isWorkspaceExport = firstSubpage > 2
+
+    const workspaceFolderRegex =
+        /^Export-[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/
+
+    const isWorkspaceExport =
+        filePaths.length > 0 &&
+        workspaceFolderRegex.test(filePaths[0].split("/")[0])
 
     const rootPage = createEmptyPage()
 
@@ -34,15 +28,23 @@ const parseZipFile = async (file: File) => {
 
     for (const absoluteFilePath of filePaths) {
         let text = ""
-        if (absoluteFilePath.endsWith(".html"))
+        if (absoluteFilePath.endsWith(".html")) {
             text = (await zip.file(absoluteFilePath)?.async("text")) ?? ""
-        await addFileToPages(
-            (isWorkspaceExport ? `Workspace ${fixedIdAlternate}/` : "") +
-                absoluteFilePath,
-            rootPage,
-            text
-        )
+        }
+
+        let workspacePath: string = absoluteFilePath
+
+        if (isWorkspaceExport) {
+            //remove "Export-2653ea2c-750d-4917-9fed-900b16d80734" and add `Workspace ${fixedIdAlternate}/` instead
+            workspacePath = [
+                `Workspace ${fixedIdAlternate}`,
+                ...absoluteFilePath.split("/").slice(1)
+            ].join("/")
+        }
+
+        addFileToPages(workspacePath, rootPage, text)
     }
+    console.log("zip file parsed", rootPage)
     return rootPage
 }
 
@@ -61,12 +63,11 @@ const validateFilePath = (filePath: string[]) => {
     return true
 }
 
-const addFileToPages = async (
-    filePath: string,
-    rootPage: Page,
-    text: string
-) => {
-    if (!filePath.endsWith(".html")) return
+const addFileToPages = (filePath: string, rootPage: Page, text: string) => {
+    if (!filePath.endsWith(".html")) {
+        console.warn("path doesn't end with '.html'", filePath)
+        return
+    }
 
     const splitFilePath = filePath.split("/")
     const pathValid = validateFilePath(splitFilePath)
@@ -75,7 +76,10 @@ const addFileToPages = async (
         return
     }
 
-    if (!text) return
+    if (!text) {
+        console.warn("no text", filePath)
+        return
+    }
     const pageInfo = parseHtml(text, filePath)
 
     let title = pageInfo.icon ? pageInfo.icon + " " : ""
