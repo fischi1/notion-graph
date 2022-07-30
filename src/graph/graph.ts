@@ -136,11 +136,17 @@ const initGraph = () => {
             .strength(0.2)
     )
 
+    /**
+     * Debug function
+     */
     //@ts-expect-error
     window.resetAlpha = () => {
         simulation.alpha(1).restart()
     }
 
+    /**
+     * Debug function
+     */
     //@ts-expect-error
     window.resetPosition = () => {
         nodes.forEach((node) => {
@@ -427,6 +433,10 @@ const initGraph = () => {
     })
 
     function storeInLocalStorage() {
+        if (nodes.length === 0) {
+            return
+        }
+
         const copiedLinks = (structuredClone(links) as PageLink[]).map(
             (link) => {
                 return {
