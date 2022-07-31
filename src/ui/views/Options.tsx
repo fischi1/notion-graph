@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react"
 import { dispatchTraversePages } from "../../events/TraversePagesEvent"
 import { TraversalType } from "../../types/TraversalType"
 import CollapsingPagesDialogContent from "../components/dialogContent/CollapsingPagesDialogContent"
+import DropzoneWrapper from "../components/DropzoneWrapper"
 import JsonDownloadLink from "../components/JsonDownloadLink"
 import PageCount from "../components/PageCount"
 import PageCountAfterCollapse from "../components/PageCountAfterCollapse"
@@ -42,88 +43,98 @@ const Options = () => {
         dispatch({ type: "optionsDone" })
     }
 
+    const handleFileDrop = (file: File) => {
+        dispatch({ type: "fileChosen", file: file })
+    }
+
     return (
         <Panel>
-            <Heading>2. Options</Heading>
-            <div style={{ paddingTop: "0rem" }}>
-                Found&nbsp;
-                <b>
-                    <PageCount />
-                </b>
-                &nbsp;pages
-            </div>
-            <form onSubmit={handleSubmit}>
-                <div style={{ paddingTop: "1.7rem" }}>
-                    <p id="traversal-label">Traversal</p>
-                    <div role="radiogroup" aria-labelledby="traversal-label">
-                        <Radio
-                            id="breadth-first-radio-input"
-                            name="traversal-radio"
-                            value={"breadth-first" as TraversalType}
-                            onChange={setTraversalType}
-                            checked={traversalType === "breadth-first"}
+            <DropzoneWrapper onFile={handleFileDrop}>
+                <Heading>2. Options</Heading>
+                <div style={{ paddingTop: "0rem" }}>
+                    Found&nbsp;
+                    <b>
+                        <PageCount />
+                    </b>
+                    &nbsp;pages
+                </div>
+                <form onSubmit={handleSubmit}>
+                    <div style={{ paddingTop: "1.7rem" }}>
+                        <p id="traversal-label">Traversal</p>
+                        <div
+                            role="radiogroup"
+                            aria-labelledby="traversal-label"
                         >
-                            Breadth-first
-                        </Radio>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <Radio
-                            id="depth-first-radio-input"
-                            name="traversal-radio"
-                            value={"depth-first" as TraversalType}
-                            onChange={setTraversalType}
-                            checked={traversalType === "depth-first"}
+                            <Radio
+                                id="breadth-first-radio-input"
+                                name="traversal-radio"
+                                value={"breadth-first" as TraversalType}
+                                onChange={setTraversalType}
+                                checked={traversalType === "breadth-first"}
+                            >
+                                Breadth-first
+                            </Radio>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <Radio
+                                id="depth-first-radio-input"
+                                name="traversal-radio"
+                                value={"depth-first" as TraversalType}
+                                onChange={setTraversalType}
+                                checked={traversalType === "depth-first"}
+                            >
+                                Depth-first
+                            </Radio>
+                        </div>
+                    </div>
+                    <div style={{ paddingTop: "1.7rem" }}>
+                        <label
+                            style={{ display: "block" }}
+                            htmlFor="collapse-range-input"
                         >
-                            Depth-first
-                        </Radio>
+                            Collapse pages with more than{" "}
+                            <b>{collapseThreshold}</b>
+                            &nbsp;children
+                        </label>
+                        <Link href="#collapse-help-modal">
+                            What is this setting for?
+                        </Link>
+                        <Range
+                            value={collapseThreshold}
+                            onChange={setCollapseThreshold}
+                            min={3}
+                            max={50}
+                            id="collapse-range-input"
+                        />
+                        <div>
+                            Results in&nbsp;
+                            <b>
+                                <PageCountAfterCollapse
+                                    collapseThreshold={collapseThreshold}
+                                />
+                            </b>
+                            &nbsp;remaining pages
+                        </div>
                     </div>
-                </div>
-                <div style={{ paddingTop: "1.7rem" }}>
-                    <label
-                        style={{ display: "block" }}
-                        htmlFor="collapse-range-input"
-                    >
-                        Collapse pages with more than <b>{collapseThreshold}</b>
-                        &nbsp;children
-                    </label>
-                    <Link href="#collapse-help-modal">
-                        What is this setting for?
-                    </Link>
-                    <Range
-                        value={collapseThreshold}
-                        onChange={setCollapseThreshold}
-                        min={3}
-                        max={50}
-                        id="collapse-range-input"
-                    />
-                    <div>
-                        Results in&nbsp;
-                        <b>
-                            <PageCountAfterCollapse
-                                collapseThreshold={collapseThreshold}
-                            />
-                        </b>
-                        &nbsp;remaining pages
+                    <div style={{ paddingTop: "1.7rem" }}>
+                        <label htmlFor="delay-range-input">
+                            Interval in milliseconds between adding nodes
+                        </label>
+                        <Range
+                            value={delay}
+                            onChange={setDelay}
+                            min={5}
+                            id="delay-range-input"
+                        />
                     </div>
-                </div>
-                <div style={{ paddingTop: "1.7rem" }}>
-                    <label htmlFor="delay-range-input">
-                        Interval in milliseconds between adding nodes
-                    </label>
-                    <Range
-                        value={delay}
-                        onChange={setDelay}
-                        min={5}
-                        id="delay-range-input"
-                    />
-                </div>
-                <div style={{ paddingTop: "1.7rem" }}>
-                    <Button type="submit">Generate Graph</Button>
-                </div>
-            </form>
+                    <div style={{ paddingTop: "1.7rem" }}>
+                        <Button type="submit">Generate Graph</Button>
+                    </div>
+                </form>
+                {import.meta.env.DEV && <JsonDownloadLink />}
+            </DropzoneWrapper>
             <Dialog open={open} onClose={back} title="Collapsing pages">
                 <CollapsingPagesDialogContent />
             </Dialog>
-            {import.meta.env.DEV && <JsonDownloadLink />}
         </Panel>
     )
 }
