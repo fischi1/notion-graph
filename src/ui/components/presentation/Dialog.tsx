@@ -17,10 +17,8 @@ const Dialog = ({ open, onClose, title, children }: Props) => {
     useLayoutEffect(() => {
         if (open) {
             dialogOverlayRef.current?.removeAttribute("open")
-            // @ts-expect-error
             dialogOverlayRef.current?.showModal()
         } else {
-            // @ts-expect-error
             dialogOverlayRef.current?.close()
         }
     }, [open])
