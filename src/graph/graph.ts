@@ -322,6 +322,24 @@ const initGraph = () => {
         simulation.nodes(nodes)
         //@ts-ignore
         simulation.force("link").links(links)
+
+        //calculate many-body strength
+        // <= 50 nodes ... -maxForce
+        // > 150 nodes ... -minForce
+
+        const maxForce = 1000
+        const minForce = 200
+        const maxNodes = 250
+        const minNodes = 50
+
+        const coefficient =
+            1 - (nodes.length - minNodes) / (maxNodes - minNodes)
+        const cappedCoefficient = Math.min(Math.max(coefficient, 0), 1)
+
+        const force = minForce + (maxForce - minForce) * cappedCoefficient
+
+        simulation.force("charge", d3.forceManyBody().strength(-force))
+
         if (resetAlpha) simulation.alpha(1)
         simulation.restart()
     }
