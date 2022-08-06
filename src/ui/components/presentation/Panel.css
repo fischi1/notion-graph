@@ -1,5 +1,4 @@
 .panel {
-    --angle-size: 15px;
     --color: rgba(0, 0, 0, 0.8157);
     position: relative;
     background-color: var(--color);
