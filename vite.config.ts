@@ -7,6 +7,7 @@ import eslint from "vite-plugin-eslint"
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [react(), removeConsole(), eslint()],
+    base: "/notion-graph/",
     build: {
         rollupOptions: {
             plugins: [visualizer()]

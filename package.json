@@ -1,11 +1,13 @@
 {
   "name": "graph",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "homepage": "/notion-graph",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "npm run lint && vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+    "deploy": "npm run build && npm version patch -m \"version %s\" && node ./deploy.js"
   },
   "devDependencies": {
     "rollup-plugin-visualizer": "^5.7.1",
@@ -21,7 +23,9 @@
     "@vitejs/plugin-react": "^2.0.0",
     "clsx": "^1.2.1",
     "d3": "^7.6.1",
+    "dotenv": "^16.0.1",
     "eslint-config-react-app": "^7.0.1",
+    "gh-pages": "^4.0.0",
     "jszip": "^3.10.0",
     "postcss-nested": "^5.0.6",
     "react": "^18.2.0",
