@@ -5,21 +5,71 @@ import { createEmptyPage, Page } from "../types/Page"
 const fixedId = "ffb0e8ae-b45e-40b6-925f-a453f9dd3f57"
 const fixedIdAlternate = fixedId.replaceAll("-", "")
 
+const workspaceFolderRegex =
+    /^Export-[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/
+
+type WorkspaceExportType = "none" | "rootFolder" | "multipleItemsInRoot"
+
+const checkIfWorkspaceExport = (filePaths: string[]): WorkspaceExportType => {
+    // workspace-html_20220730.zip
+    if (
+        filePaths.length > 0 &&
+        workspaceFolderRegex.test(filePaths[0].split("/")[0])
+    ) {
+        return "rootFolder"
+    }
+
+    // workspace-html_202200810.zip
+    let foundFirstSubpage = false
+    let firstSubpage = 0
+    for (
+        firstSubpage = 0;
+        firstSubpage < filePaths.length && !foundFirstSubpage;
+        firstSubpage++
+    ) {
+        const path = filePaths[firstSubpage]
+        if (path.split("/").length > 1) {
+            foundFirstSubpage = true
+        }
+    }
+    if (firstSubpage > 2) {
+        return "multipleItemsInRoot"
+    }
+
+    return "none"
+}
+
+const modifyFilePathForExportType = (
+    filePath: string,
+    workspaceExport: WorkspaceExportType
+): string => {
+    switch (workspaceExport) {
+        case "rootFolder":
+            //remove "Export-2653ea2c-750d-4917-9fed-900b16d80734" and add `Workspace ${fixedIdAlternate}/` instead
+            return [
+                `Workspace ${fixedIdAlternate}`,
+                ...filePath.split("/").slice(1)
+            ].join("/")
+
+        case "multipleItemsInRoot":
+            return `Workspace ${fixedIdAlternate}/${filePath}`
+
+        default:
+            return filePath
+    }
+}
+
 const parseZipFile = async (file: File) => {
     const zip = await JSZip.loadAsync(file)
 
     const filePaths = Object.keys(zip.files)
 
-    const workspaceFolderRegex =
-        /^Export-[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/
-
-    const isWorkspaceExport =
-        filePaths.length > 0 &&
-        workspaceFolderRegex.test(filePaths[0].split("/")[0])
+    const workspaceExportType = checkIfWorkspaceExport(filePaths)
+    console.log("workspaceExportType", workspaceExportType)
 
     const rootPage = createEmptyPage()
 
-    if (isWorkspaceExport) {
+    if (workspaceExportType !== "none") {
         //Notion opens the last visited page if the id doesn't exist
         rootPage.id = fixedId
         rootPage.title = "Workspace"
@@ -32,15 +82,10 @@ const parseZipFile = async (file: File) => {
             text = (await zip.file(absoluteFilePath)?.async("text")) ?? ""
         }
 
-        let workspacePath: string = absoluteFilePath
-
-        if (isWorkspaceExport) {
-            //remove "Export-2653ea2c-750d-4917-9fed-900b16d80734" and add `Workspace ${fixedIdAlternate}/` instead
-            workspacePath = [
-                `Workspace ${fixedIdAlternate}`,
-                ...absoluteFilePath.split("/").slice(1)
-            ].join("/")
-        }
+        const workspacePath = modifyFilePathForExportType(
+            absoluteFilePath,
+            workspaceExportType
+        )
 
         addFileToPages(workspacePath, rootPage, text)
     }

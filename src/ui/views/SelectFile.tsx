@@ -25,6 +25,12 @@ const SelectFile = () => {
                 </Link>
                 <br />
                 <br />
+                <p style={{ maxWidth: "45ch", fontSize: "0.9em" }}>
+                    Everything this application does happens in the browser. No
+                    data is uploaded to any server. Your browser parses the zip
+                    file.
+                </p>
+                <br />
                 <div>
                     <FileInputButton
                         accept={

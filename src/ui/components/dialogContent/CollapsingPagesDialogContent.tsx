@@ -34,7 +34,7 @@ const CollapsingPagesDialogContent = () => (
             <br />
             <Image
                 src={C01_before}
-                alt={`TODO`}
+                alt="Screenshot of a part of a graph BEFORE pages are collapsed"
                 width={300}
                 height={199}
                 maxWidth={236}
@@ -44,7 +44,12 @@ const CollapsingPagesDialogContent = () => (
         <p>
             After
             <br />
-            <Image src={C02_after} alt={`TODO`} width={236} height={145} />
+            <Image
+                src={C02_after}
+                alt="Screenshot of a part of a graph AFTER pages are collapsed"
+                width={236}
+                height={145}
+            />
         </p>
     </DialogContent>
 )
