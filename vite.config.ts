@@ -12,5 +12,10 @@ export default defineConfig({
         rollupOptions: {
             plugins: [visualizer()]
         }
+    },
+    define: {
+        "process.env.VITE_APP_VERSION": JSON.stringify(
+            process.env.npm_package_version
+        )
     }
 })

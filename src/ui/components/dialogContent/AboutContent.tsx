@@ -7,6 +7,9 @@ const AboutContent = () => {
         <DialogContent className="about-content">
             <br />
             <p>
+                Notion Graph <code>v{process.env.VITE_APP_VERSION}</code>
+            </p>
+            <p>
                 Made by&nbsp;
                 <Link
                     href="https://twitter.com/Fischinator"
